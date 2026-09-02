@@ -15,20 +15,19 @@ import net.neoforged.neoforge.common.NeoForge
 import net.neoforged.neoforge.event.RegisterCommandsEvent
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-import thedarkcolour.kotlinforforge.neoforge.forge.MOD_BUS
-import thedarkcolour.kotlinforforge.neoforge.forge.FORGE_BUS
+import net.neoforged.bus.api.IEventBus
 
 @Mod(Hexbound.MOD_ID)
-class HexboundForge {
+class HexboundForge(modBus: IEventBus) {
     init {
-        MOD_BUS.addListener(Hexbound::onInitialize)
-        HexboundData.init(MOD_BUS)
+        modBus.addListener(Hexbound::onInitialize)
+        HexboundData.init(modBus)
 
         // Uncomment once InteropManager is fully migrated
         // InteropManager.init()
 
         // Debug features
-        FORGE_BUS.addListener(Hexbound::onCommandRegistration)
+        NeoForge.EVENT_BUS.addListener(Hexbound::onCommandRegistration)
     }
 }
 

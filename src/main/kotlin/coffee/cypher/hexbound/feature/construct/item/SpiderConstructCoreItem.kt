@@ -1,11 +1,5 @@
 package coffee.cypher.hexbound.feature.construct.item
 
-import coffee.cypher.hexbound.init.HexboundData
-import net.minecraft.item.Item
-import org.quiltmc.qkl.library.items.buildItemSettings
+import net.minecraft.world.item.Item
 
-object SpiderConstructCoreItem : Item(
-    buildItemSettings {
-        group(HexboundData.ItemGroups.HEXBOUND)
-    }
-)
+class SpiderConstructCoreItem(properties: Properties) : Item(properties)

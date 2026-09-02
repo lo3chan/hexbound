@@ -5,21 +5,18 @@ import net.neoforged.api.distmarker.Dist
 import net.neoforged.fml.common.EventBusSubscriber
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent
-import thedarkcolour.kotlinforforge.neoforge.forge.MOD_BUS
+import net.neoforged.bus.api.SubscribeEvent
 
 @EventBusSubscriber(modid = Hexbound.MOD_ID, bus = EventBusSubscriber.Bus.MOD, value = [Dist.CLIENT])
 object HexboundClient {
-    init {
-        MOD_BUS.addListener(this::onInitializeClient)
-        MOD_BUS.addListener(this::registerPayloads)
-    }
-
+    @SubscribeEvent
     fun onInitializeClient(event: FMLClientSetupEvent) {
         event.enqueueWork {
             initClientRegistries()
         }
     }
 
+    @SubscribeEvent
     fun registerPayloads(event: RegisterPayloadHandlersEvent) {
         val registrar = event.registrar("hexbound")
         registrar.playToClient(

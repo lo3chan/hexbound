@@ -5,37 +5,28 @@ import at.petrak.hexcasting.api.misc.MediaConstants
 import at.petrak.hexcasting.api.utils.mediaBarColor
 import at.petrak.hexcasting.api.utils.mediaBarWidth
 import coffee.cypher.hexbound.init.HexboundData
-import net.minecraft.client.item.TooltipContext
-import net.minecraft.item.Item
-import net.minecraft.item.ItemStack
-import net.minecraft.text.Text
-import net.minecraft.world.World
-import org.quiltmc.qkl.library.items.itemSettingsOf
-import org.quiltmc.qkl.library.nbt.set
-import org.quiltmc.qkl.library.text.*
+import net.minecraft.network.chat.Component
+import net.minecraft.world.item.Item
+import net.minecraft.world.item.ItemStack
+import net.minecraft.world.item.TooltipFlag
+import net.minecraft.world.level.Level
 import coffee.cypher.hexbound.init.config.HexboundConfig
-import net.minecraft.item.ItemGroup
-import net.minecraft.util.collection.DefaultedList
+import net.minecraft.core.component.DataComponents
+import net.minecraft.world.item.component.CustomData
 
-object SpiderConstructBatteryItem : Item(
-    itemSettingsOf(
-        group = HexboundData.ItemGroups.HEXBOUND,
-        maxCount = 1
-    )
-), MediaHolderItem {
+class SpiderConstructBatteryItem(properties: Properties) : Item(properties.stacksTo(1)), MediaHolderItem {
     val maxCharge: Long
         get() = (HexboundConfig.spiderBatteryChargeRequired * MediaConstants.DUST_UNIT).toLong()
 
     var ItemStack.charge: Long
         get() {
-            if (!orCreateNbt.contains("charge")) {
-                orCreateNbt["charge"] = 0L
-            }
-
-            return orCreateNbt.getLong("charge")
+            val customData = this.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY)
+            return if (customData.contains("charge")) customData.copyTag().getLong("charge") else 0L
         }
         set(value) {
-            orCreateNbt["charge"] = value
+            CustomData.update(DataComponents.CUSTOM_DATA, this) { tag ->
+                tag.putLong("charge", value)
+            }
         }
 
     override fun getMedia(stack: ItemStack): Long {
@@ -58,64 +49,46 @@ object SpiderConstructBatteryItem : Item(
         return true
     }
 
-    override fun isItemBarVisible(stack: ItemStack): Boolean {
+    override fun isBarVisible(stack: ItemStack): Boolean {
         return stack.charge < maxCharge
     }
 
-    override fun getItemBarColor(stack: ItemStack): Int {
+    override fun getBarColor(stack: ItemStack): Int {
         return mediaBarColor(stack.charge, maxCharge)
     }
 
-    override fun getItemBarStep(stack: ItemStack): Int {
+    override fun getBarWidth(stack: ItemStack): Int {
         return mediaBarWidth(stack.charge, maxCharge)
     }
 
-    override fun getDefaultStack(): ItemStack {
-        return ItemStack(this, 1).also { it.charge }
+    override fun getDefaultInstance(): ItemStack {
+        return ItemStack(this, 1).also { it.charge = 0L }
     }
 
-    override fun appendStacks(group: ItemGroup?, stacks: DefaultedList<ItemStack>) {
-        if (isInGroup(group)) {
-            stacks.add(ItemStack(this).also { it.charge = 0 })
-            stacks.add(ItemStack(this).also { it.charge = maxCharge })
-        }
-    }
-
-    override fun appendTooltip(
+    override fun appendHoverText(
         stack: ItemStack,
-        world: World?,
-        tooltip: MutableList<Text>,
-        context: TooltipContext
+        context: TooltipContext,
+        tooltip: MutableList<Component>,
+        flag: TooltipFlag
     ) {
-        tooltip += buildText {
-            val hexColor = Color(0xB38EF3)
+        val hexColor = 0xB38EF3
 
-            if (stack.charge == maxCharge) {
-                color(color = hexColor) {
-                    translatable("item.hexbound.spider_construct_battery.full_charge")
-                }
-            } else {
-                val percentage = (stack.charge.toDouble() / maxCharge).toInt()
+        if (stack.charge == maxCharge) {
+            tooltip.add(Component.translatable("item.hexbound.spider_construct_battery.full_charge").withColor(hexColor))
+        } else {
+            val percentage = ((stack.charge.toDouble() / maxCharge) * 100).toInt()
 
-                val currentText = buildText {
-                    color(color = hexColor) {
-                        literal((stack.charge / MediaConstants.DUST_UNIT).toString())
-                    }
-                }
+            val currentText = Component.literal((stack.charge / MediaConstants.DUST_UNIT).toString()).withColor(hexColor)
+            val maxText = Component.literal(HexboundConfig.spiderBatteryChargeRequired.toString()).withColor(hexColor)
 
-                val maxText = buildText {
-                    color(color = hexColor) {
-                        literal(HexboundConfig.spiderBatteryChargeRequired.toString())
-                    }
-                }
-
-                translatable("item.hexbound.spider_construct_battery.charge", percentage, currentText, maxText)
-            }
-
+            tooltip.add(Component.translatable("item.hexbound.spider_construct_battery.charge", percentage, currentText, maxText))
         }
     }
 
-    fun isFullyCharged(stack: ItemStack): Boolean {
-        return stack.charge >= maxCharge
+    companion object {
+        fun isFullyCharged(stack: ItemStack): Boolean {
+            val battery = stack.item as? SpiderConstructBatteryItem ?: return false
+            return stack.charge >= battery.maxCharge
+        }
     }
 }
