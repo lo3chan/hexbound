@@ -13,7 +13,7 @@ import coffee.cypher.hexbound.feature.colorizer_storage.mishap.MishapTooManyColo
 import coffee.cypher.hexbound.init.memorizedColorizers
 import coffee.cypher.hexbound.util.nonBlankSignature
 import coffee.cypher.hexbound.util.requireCaster
-import net.minecraft.server.network.ServerPlayerEntity
+import net.minecraft.server.level.ServerPlayer
 
 object OpColorizerSave : SpellAction {
     override val argc = 1
@@ -45,7 +45,7 @@ object OpColorizerSave : SpellAction {
     private data class Spell(
         val key: HexPattern,
         val value: FrozenPigment,
-        val caster: ServerPlayerEntity
+        val caster: ServerPlayer
     ) : RenderedSpell {
         override fun cast(ctx: CastingEnvironment) {
             caster.memorizedColorizers[key.nonBlankSignature] = value
