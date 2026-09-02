@@ -1,7 +1,7 @@
 package coffee.cypher.hexbound.util
 
-import net.minecraft.util.math.Vec3d
-import net.minecraft.util.math.Vec3i
+import net.minecraft.world.phys.Vec3
+import net.minecraft.core.Vec3i
 
-operator fun Vec3d.times(factor: Double): Vec3d = multiply(factor)
-operator fun Vec3i.times(factor: Int): Vec3i = multiply(factor)
+operator fun Vec3.times(factor: Double): Vec3 = this.scale(factor)
+operator fun Vec3i.times(factor: Int): Vec3i = Vec3i(this.x * factor, this.y * factor, this.z * factor)

@@ -6,12 +6,12 @@ hexcasting = "1.21.1-0.12.0"
 paucal = "0.7.0"
 geckolib = "4.6.4"
 patchouli = "1.21-88-NEOFORGE"
-moddev = "2.0.74-beta"
+moddev = "2.0.74"
 
 [libraries]
 minecraft = { module = "net.neoforged:neoforge", version.ref = "neoforge" }
-hexcasting = { module = "at.petra-k.hexcasting:hexcasting-neoforge-1.21.1", version.ref = "hexcasting" }
-paucal = { module = "at.petra-k.paucal:paucal-neoforge-1.21.1", version.ref = "paucal" }
+hexcasting = { module = "at.petrak.hexcasting:hexcasting-neoforge-1.21.1", version.ref = "hexcasting" }
+paucal = { module = "at.petrak.paucal:paucal-neoforge-1.21.1", version.ref = "paucal" }
 geckolib = { module = "software.bernie.geckolib:geckolib-neoforge-1.21.1", version.ref = "geckolib" }
 patchouli = { module = "vazkii.patchouli:Patchouli", version.ref = "patchouli" }
 

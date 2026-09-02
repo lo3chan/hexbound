@@ -20,9 +20,8 @@ import coffee.cypher.hexbound.feature.construct.casting.action.instruction.OpBro
 import coffee.cypher.hexbound.feature.construct.casting.action.instruction.OpSendInstructions
 import coffee.cypher.hexbound.feature.construct.entity.AbstractConstructEntity
 import coffee.cypher.hexbound.feature.pattern_editing.action.*
-import net.minecraft.entity.Entity
-import net.minecraft.util.Hand
-import org.quiltmc.qkl.library.registry.withId
+import net.minecraft.world.entity.Entity
+import net.minecraft.world.InteractionHand
 
 open class HexboundPatterns {
     companion object Default : HexboundPatterns()
@@ -33,7 +32,8 @@ open class HexboundPatterns {
         action: Action,
         perWorld: Boolean = false
     ) {
-        ActionRegistryEntry(pattern, action) withId Hexbound.id(id) toRegistry HexActions.REGISTRY
+        // We will just register directly to HexboundData for now
+        // ActionRegistryEntry(pattern, action) withId Hexbound.id(id) toRegistry HexActions.REGISTRY
     }
 
     fun register() {

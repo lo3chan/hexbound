@@ -1,11 +1,15 @@
 package coffee.cypher.hexbound.util.rendering
 
+import com.mojang.blaze3d.shaders.Uniform
 import com.mojang.blaze3d.vertex.VertexFormat
-import net.minecraft.client.render.ShaderProgram
-import net.minecraft.resource.ResourceFactory
+import net.minecraft.client.renderer.ShaderInstance
+import net.minecraft.server.packs.resources.ResourceProvider
+import net.minecraft.resources.ResourceLocation
 
-class TimedShaderProgram(factory: ResourceFactory, name: String, format: VertexFormat) :
-    ShaderProgram(factory, name, format)
-{
-        val worldTime = getUniform("Hexbound_WorldTime")
+class TimedShaderProgram(
+    factory: ResourceProvider,
+    name: ResourceLocation,
+    format: VertexFormat
+) : ShaderInstance(factory, name, format) {
+    val timeUniform: Uniform? = getUniform("Time")
 }

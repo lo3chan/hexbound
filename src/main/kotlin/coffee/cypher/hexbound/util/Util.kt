@@ -13,19 +13,13 @@ import coffee.cypher.hexbound.feature.construct.entity.AbstractConstructEntity
 import coffee.cypher.hexbound.feature.construct.entity.SpiderConstructEntity
 import coffee.cypher.hexbound.feature.construct.mishap.MishapNoConstruct
 import coffee.cypher.hexbound.init.config.HexboundConfig
-import coffee.cypher.hexbound.mixins.accessor.MutableTextAccessor
-import net.minecraft.entity.Entity
-import net.minecraft.entity.passive.AllayEntity
-import net.minecraft.server.network.ServerPlayerEntity
-import net.minecraft.text.Text
-import net.minecraft.text.component.TranslatableComponent
-import net.minecraft.util.math.Direction
-import net.minecraft.util.math.Vec3d
-import net.minecraft.util.math.Vec3i
-import org.quiltmc.qkl.library.text.Color
-import org.quiltmc.qkl.library.text.buildText
-import org.quiltmc.qkl.library.text.color
-import org.quiltmc.qkl.library.text.translatable
+import net.minecraft.world.entity.Entity
+import net.minecraft.world.entity.animal.allay.Allay
+import net.minecraft.server.level.ServerPlayer
+import net.minecraft.network.chat.Component
+import net.minecraft.core.Direction
+import net.minecraft.world.phys.Vec3
+import net.minecraft.core.Vec3i
 import java.text.DecimalFormat
 
 val HexPattern.nonBlankSignature: String
@@ -49,10 +43,10 @@ fun List<Iota>.getConstruct(index: Int, argc: Int = 0): AbstractConstructEntity 
 fun List<Iota>.getSpiderConstruct(index: Int, argc: Int = 0): SpiderConstructEntity =
     getEntityOfType("entity.construct.spider", index, argc)
 
-fun List<Iota>.getAllay(index: Int, argc: Int = 0): AllayEntity =
+fun List<Iota>.getAllay(index: Int, argc: Int = 0): Allay =
     getEntityOfType("entity.allay", index, argc)
 
-fun CastingEnvironment.requireCaster(): ServerPlayerEntity = caster ?: throw MishapNoSpellCircle() //TODO better mishap
+fun CastingEnvironment.requireCaster(): ServerPlayer = caster as? ServerPlayer ?: throw MishapNoSpellCircle() //TODO better mishap
 
 fun CastingEnvironment.requireConstruct(): ConstructCastEnv = this as? ConstructCastEnv ?: throw MishapNoConstruct()
 
@@ -67,55 +61,34 @@ fun redirectSpiderLang(original: String, entity: SpiderConstructEntity? = null):
         original
 }
 
-fun redirectSpiderLang(original: Text, entity: SpiderConstructEntity? = null): Text {
+fun redirectSpiderLang(original: Component, entity: SpiderConstructEntity? = null): Component {
     if (entity?.isAltModelEnabled != true && !HexboundConfig.replaceSpiderConstruct) {
         return original
     }
 
-    val component = original.asComponent()
-
-    val newComponent = if (component is TranslatableComponent)
-        TranslatableComponent(redirectSpiderLang(component.key), null, emptyArray())
-    else
-        component
-
-    return MutableTextAccessor.create(
-        newComponent,
-        original.siblings.map(::redirectSpiderLang),
-        original.style
-    )
+    return Component.translatable(redirectSpiderLang(original.string))
 }
 
 val DECIMAL_FORMAT = DecimalFormat("#0.#")
 
-fun formatVector(vec: Vec3d): Text {
-    return buildText {
-        color(Color.RED) {
-            translatable(
-                "hexbound.vector_format",
-                DECIMAL_FORMAT.format(vec.x),
-                DECIMAL_FORMAT.format(vec.y),
-                DECIMAL_FORMAT.format(vec.z)
-            )
-        }
-    }
+fun formatVector(vec: Vec3): Component {
+    return Component.translatable(
+        "hexbound.vector_format",
+        DECIMAL_FORMAT.format(vec.x),
+        DECIMAL_FORMAT.format(vec.y),
+        DECIMAL_FORMAT.format(vec.z)
+    )
 }
 
-fun formatVector(vec: Vec3i): Text {
-    return buildText {
-        return buildText {
-            color(Color.RED) {
-                translatable(
-                    "hexbound.vector_format",
-                    vec.x.toString(),
-                    vec.y.toString(),
-                    vec.z.toString(),
-                )
-            }
-        }
-    }
+fun formatVector(vec: Vec3i): Component {
+    return Component.translatable(
+        "hexbound.vector_format",
+        vec.x.toString(),
+        vec.y.toString(),
+        vec.z.toString(),
+    )
 }
 
-fun localizeSide(direction: Direction): Text {
-    return Text.translatable("hexbound.direction.${direction.name.lowercase()}")
+fun localizeSide(direction: Direction): Component {
+    return Component.translatable("hexbound.direction.${direction.name.lowercase()}")
 }

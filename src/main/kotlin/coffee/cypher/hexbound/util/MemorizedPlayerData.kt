@@ -1,46 +1,48 @@
 package coffee.cypher.hexbound.util
 
-import at.petrak.hexcasting.api.pigment.FrozenPigment
-import at.petrak.hexcasting.xplat.IXplatAbstractions
-import net.minecraft.entity.player.PlayerEntity
-import net.minecraft.nbt.NbtCompound
-import net.minecraft.text.Text
-import org.quiltmc.qkl.library.nbt.set
-import java.util.UUID
+import com.mojang.authlib.GameProfile
+import net.minecraft.world.entity.player.Player
+import net.minecraft.nbt.CompoundTag
+import net.minecraft.network.chat.Component
+import java.util.*
+import net.minecraft.core.registries.BuiltInRegistries
+import net.minecraft.core.RegistryAccess
 
-data class MemorizedPlayerData(
+class MemorizedPlayerData(
     val uuid: UUID,
-    val name: String,
-    val displayName: Text,
-    val pigment: FrozenPigment
+    val gameProfile: GameProfile,
+    val displayName: Component
 ) {
-    fun toNbt(): NbtCompound {
-        val result = NbtCompound()
+    fun toNbt(registryAccess: RegistryAccess): CompoundTag {
+        val nbt = CompoundTag()
 
-        result.putUuid("uuid", uuid)
-        result["name"] = name
-        result["displayName"] = Text.Serializer.toJson(displayName)
-        result["pigment"] = pigment.serializeToNBT()
+        nbt.putUUID("uuid", uuid)
 
-        return result
+        val profileNbt = CompoundTag()
+        // NbtHelper.writeGameProfile(profileNbt, gameProfile)
+        // Ignoring game profile for now
+        nbt.put("gameProfile", profileNbt)
+
+        nbt.putString("displayName", Component.Serializer.toJson(displayName, registryAccess))
+
+        return nbt
     }
 
     companion object {
-        fun fromNbt(nbt: NbtCompound): MemorizedPlayerData {
-            val uuid = nbt.getUuid("uuid")
-            val name = nbt.getString("name")
-            val displayName = Text.Serializer.fromLenientJson(nbt.getString("displayName")) ?: Text.literal(name)
-            val colorizer = FrozenPigment.fromNBT(nbt.getCompound("colorizer"))
+        fun fromNbt(nbt: CompoundTag, registryAccess: RegistryAccess): MemorizedPlayerData {
+            val uuid = nbt.getUUID("uuid")
+            // val gameProfile = NbtHelper.toGameProfile(nbt.getCompound("gameProfile")) ?: GameProfile(uuid, "")
+            val gameProfile = GameProfile(uuid, "")
+            val displayName = Component.Serializer.fromJson(nbt.getString("displayName"), registryAccess) ?: Component.literal("")
 
-            return MemorizedPlayerData(uuid, name, displayName, colorizer)
+            return MemorizedPlayerData(uuid, gameProfile, displayName)
         }
 
-        fun forPlayer(player: PlayerEntity): MemorizedPlayerData {
+        fun fromPlayer(player: Player): MemorizedPlayerData {
             return MemorizedPlayerData(
                 player.uuid,
-                player.gameProfile.name,
-                player.displayName,
-                IXplatAbstractions.INSTANCE.getPigment(player)
+                player.gameProfile,
+                player.displayName ?: Component.literal("")
             )
         }
     }

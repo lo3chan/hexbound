@@ -1,5 +1,3 @@
-@file:Suppress("unused")
-
 package coffee.cypher.hexbound.init
 
 import coffee.cypher.hexbound.feature.combat.shield.ShieldEntity
@@ -9,166 +7,127 @@ import coffee.cypher.hexbound.feature.construct.command.*
 import coffee.cypher.hexbound.feature.construct.entity.SpiderConstructEntity
 import coffee.cypher.hexbound.feature.construct.item.SpiderConstructBatteryItem
 import coffee.cypher.hexbound.feature.construct.item.SpiderConstructCoreItem
-import coffee.cypher.hexbound.feature.media_attachment.STATIC_MEDIA_ATTACHMENT
 import com.mojang.serialization.Codec
-import net.fabricmc.fabric.api.event.registry.FabricRegistryBuilder
-import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroup
-import net.minecraft.block.Block
-import net.minecraft.entity.EntityType
-import net.minecraft.entity.effect.StatusEffect
-import net.minecraft.item.BlockItem
-import net.minecraft.item.Item
-import net.minecraft.item.ItemGroup
-import net.minecraft.registry.DefaultedRegistry
-import net.minecraft.registry.Registries
-import net.minecraft.registry.Registry
-import net.minecraft.registry.RegistryKey
-import net.minecraft.text.Text
-import net.minecraft.util.math.BlockPos
-import net.minecraft.util.math.Vec3d
-import org.quiltmc.qkl.library.items.itemSettingsOf
-import org.quiltmc.qkl.library.registry.RegistryAction
-import org.quiltmc.qkl.library.registry.provide
-import org.quiltmc.qkl.library.serialization.CodecFactory
+import net.minecraft.world.entity.EntityType
+import net.minecraft.world.effect.MobEffect
+import net.minecraft.world.item.BlockItem
+import net.minecraft.world.item.Item
+import net.minecraft.world.level.block.Block
+import net.minecraft.core.Registry
+import net.minecraft.core.registries.BuiltInRegistries
+import net.minecraft.core.registries.Registries
+import net.minecraft.resources.ResourceKey
+import net.minecraft.network.chat.Component
+import net.minecraft.core.BlockPos
+import net.minecraft.world.phys.Vec3
+import net.neoforged.neoforge.registries.DeferredRegister
 import java.util.*
-import kotlin.reflect.KClass
-import kotlin.reflect.full.declaredMemberProperties
-import kotlin.reflect.jvm.isAccessible
+import net.minecraft.world.item.CreativeModeTab
+import net.minecraft.world.item.ItemStack
 
-object HexboundData : DataInitializer() {
-    fun init() {
+object HexboundData {
+    val ITEMS = DeferredRegister.create(BuiltInRegistries.ITEM, Hexbound.MOD_ID)
+    val BLOCKS = DeferredRegister.create(BuiltInRegistries.BLOCK, Hexbound.MOD_ID)
+    val ENTITY_TYPES = DeferredRegister.create(BuiltInRegistries.ENTITY_TYPE, Hexbound.MOD_ID)
+    val STATUS_EFFECTS = DeferredRegister.create(BuiltInRegistries.MOB_EFFECT, Hexbound.MOD_ID)
+    val TABS = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, Hexbound.MOD_ID)
+
+    val CONSTRUCT_COMMANDS_KEY = ResourceKey.createRegistryKey<ConstructCommand.Type<*>>(Hexbound.id("construct_command"))
+    val CONSTRUCT_COMMANDS = DeferredRegister.create(CONSTRUCT_COMMANDS_KEY, Hexbound.MOD_ID)
+
+    fun init(bus: net.neoforged.bus.api.IEventBus) {
+        ITEMS.register(bus)
+        BLOCKS.register(bus)
+        ENTITY_TYPES.register(bus)
+        STATUS_EFFECTS.register(bus)
+        CONSTRUCT_COMMANDS.register(bus)
+        TABS.register(bus)
+
         ModRegistries.init()
         ItemGroups.init()
-        initRegistries()
-        STATIC_MEDIA_ATTACHMENT
+        ConstructCommandTypes.init()
+        Blocks.init()
+        Items.init()
+        EntityTypes.init()
+        StatusEffects.init()
     }
 
     object ModRegistries {
-        lateinit var CONSTRUCT_COMMANDS_KEY: RegistryKey<Registry<ConstructCommand.Type<*>>>
-        lateinit var CONSTRUCT_COMMANDS: DefaultedRegistry<ConstructCommand.Type<*>>
-
-        fun init() {
-            CONSTRUCT_COMMANDS_KEY = RegistryKey.ofRegistry(Hexbound.id("construct_command"))
-
-            CONSTRUCT_COMMANDS = FabricRegistryBuilder.createDefaulted(
-                CONSTRUCT_COMMANDS_KEY,
-                Hexbound.id("no_op")
-            ).buildAndRegister()
-        }
+        fun init() {}
     }
 
     object ItemGroups {
-        lateinit var HEXBOUND: ItemGroup
+        lateinit var HEXBOUND: net.neoforged.neoforge.registries.DeferredHolder<CreativeModeTab, CreativeModeTab>
 
         fun init() {
-            HEXBOUND = FabricItemGroup.builder()
-                .name(Text.translatable("hexbound.item_group"))
-                .icon(Items.SPIDER_CONSTRUCT_CORE::getDefaultStack)
-                .build()
+            HEXBOUND = TABS.register("hexbound") { ->
+                CreativeModeTab.builder()
+                    .title(Component.translatable("hexbound.item_group"))
+                    .icon { ItemStack(Items.SPIDER_CONSTRUCT_CORE.get() as net.minecraft.world.level.ItemLike) }
+                    .displayItems { _, out ->
+                        out.accept(ItemStack(Items.SPIDER_CONSTRUCT_CORE.get() as net.minecraft.world.level.ItemLike))
+                        out.accept(ItemStack(Items.SPIDER_CONSTRUCT_BATTERY.get() as net.minecraft.world.level.ItemLike))
+                        out.accept(ItemStack(Items.CONSTRUCT_BROADCASTER.get() as net.minecraft.world.level.ItemLike))
+                    }
+                    .build()
+            }
         }
     }
 
-    object EntityTypes : Initializer<EntityType<*>>(Registries.ENTITY_TYPE) {
-        val SPIDER_CONSTRUCT: EntityType<SpiderConstructEntity> by registry.provide("spider_construct") {
+    object EntityTypes {
+        val SPIDER_CONSTRUCT = ENTITY_TYPES.register("spider_construct") { ->
             SpiderConstructEntity.createType()
         }
 
-        val SHIELD: EntityType<ShieldEntity> by registry.provide("shield") {
+        val SHIELD = ENTITY_TYPES.register("shield") { ->
             ShieldEntity.createType()
         }
+        fun init() {}
     }
 
-    object ConstructCommandTypes : Initializer<ConstructCommand.Type<*>>(ModRegistries.CONSTRUCT_COMMANDS) {
-        private val codecFactory = CodecFactory {
-            codecs {
-                named(Vec3d.CODEC, "Vec3d")
-                named(BlockPos.CODEC, "BlockPos")
-                unnamed(Codec.STRING.xmap(UUID::fromString, UUID::toString))
+    object ConstructCommandTypes {
+        // Mocked registry, need to actually implement a custom codec in neo Forge
+        private inline fun <reified T : ConstructCommand<T>> provideType(id: String): net.neoforged.neoforge.registries.DeferredHolder<ConstructCommand.Type<*>, ConstructCommand.Type<T>> {
+            return CONSTRUCT_COMMANDS.register(id) { ->
+                ConstructCommand.Type(Codec.unit(null as T?) as Codec<T>) // Fallback for now
             }
         }
 
-        private inline fun <reified T : ConstructCommand<T>> provideType(id: String): Lazy<ConstructCommand.Type<T>> {
-            return registry.provide(id) {
-                ConstructCommand.Type(codecFactory.create())
-            }
-        }
-
-        val PICK_UP by provideType<PickUp>("pick_up")
-        val DROP_OFF by provideType<DropOff>("drop_off")
-        val MOVE_TO by provideType<MoveTo>("move_to")
-        val NO_OP by provideType<NoOpCommand>("no_op")
-        val HARVEST by provideType<Harvest>("harvest")
-        val USE_ON_BLOCK by provideType<UseItemOnBlock>("use_on_block")
+        val PICK_UP = provideType<PickUp>("pick_up")
+        val DROP_OFF = provideType<DropOff>("drop_off")
+        val MOVE_TO = provideType<MoveTo>("move_to")
+        val NO_OP = provideType<NoOpCommand>("no_op")
+        val HARVEST = provideType<Harvest>("harvest")
+        val USE_ON_BLOCK = provideType<UseItemOnBlock>("use_on_block")
+        fun init() {}
     }
 
-    object Blocks : Initializer<Block>(Registries.BLOCK) {
-        val CONSTRUCT_BROADCASTER by registry.provide("construct_broadcaster") {
-            ConstructBroadcasterBlock
+    object Blocks {
+        val CONSTRUCT_BROADCASTER = BLOCKS.register("construct_broadcaster") { ->
+            ConstructBroadcasterBlock(net.minecraft.world.level.block.state.BlockBehaviour.Properties.of())
         }
+        fun init() {}
     }
 
-    object Items : Initializer<Item>(Registries.ITEM) {
-        val SPIDER_CONSTRUCT_BATTERY by registry.provide("spider_construct_battery") {
-            SpiderConstructBatteryItem
+    object Items {
+        val SPIDER_CONSTRUCT_BATTERY = ITEMS.register("spider_construct_battery") { ->
+            SpiderConstructBatteryItem(Item.Properties())
         }
 
-        val SPIDER_CONSTRUCT_CORE by registry.provide("spider_construct_core") {
-            SpiderConstructCoreItem
+        val SPIDER_CONSTRUCT_CORE = ITEMS.register("spider_construct_core") { ->
+            SpiderConstructCoreItem(Item.Properties())
         }
 
-        val CONSTRUCT_BROADCASTER by registry.provide("construct_broadcaster") {
-            BlockItem(ConstructBroadcasterBlock, itemSettingsOf(group = ItemGroups.HEXBOUND))
+        val CONSTRUCT_BROADCASTER = ITEMS.register("construct_broadcaster") { ->
+            BlockItem(Blocks.CONSTRUCT_BROADCASTER.get(), Item.Properties())
         }
+        fun init() {}
     }
 
-    object StatusEffects : Initializer<StatusEffect>(Registries.STATUS_EFFECT) {
-        val REDUCED_AMBIT by registry.provide("reduced_ambit") {
-            ReducedAmbitStatusEffect()
+    object StatusEffects {
+        val REDUCED_AMBIT = STATUS_EFFECTS.register("reduced_ambit") { ->
+            ReducedAmbitStatusEffect() as MobEffect
         }
-    }
-}
-
-abstract class DataInitializer {
-    private val initializers = mutableListOf<Initializer<*>>()
-
-    fun initRegistries() {
-        this::class.nestedClasses.forEach {
-            it.objectInstance
-        }
-
-        initializers.forEach {
-            it.init()
-            Hexbound.LOGGER.debug("Registered {}", it)
-        }
-    }
-
-    abstract inner class Initializer<T>(
-        registry: Registry<T>
-    ) {
-        protected val registry = RegistryAction(Hexbound.MOD_ID, registry)
-
-        init {
-            @Suppress("LeakingThis")
-            initializers += this
-        }
-
-        fun init() {
-            initClass(this)
-        }
-
-        private fun <T : Any> initClass(instance: T) {
-            @Suppress("UNCHECKED_CAST")
-            val klass = instance::class as KClass<T>
-
-            klass.declaredMemberProperties.onEach {
-                it.isAccessible = true
-            }.forEach {
-                val delegate = it.getDelegate(instance)
-
-                if (delegate is Lazy<*>) {
-                    delegate.getValue(instance, it)
-                }
-            }
-        }
+        fun init() {}
     }
 }

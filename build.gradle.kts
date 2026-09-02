@@ -41,6 +41,7 @@ repositories {
     maven("https://maven.blamejared.com")
     maven("https://dl.cloudsmith.io/public/geckolib3/geckolib/maven/")
     maven("https://mvn.devos.one/snapshots/")
+    maven("https://mvn.devos.one/releases/")
     maven("https://maven.shedaniel.me/")
     maven("https://maven.terraformersmc.com/")
     maven("https://jitpack.io")
@@ -48,8 +49,7 @@ repositories {
 
 dependencies {
     implementation(libs.geckolib)
-    compileOnly(libs.hexcasting)
-    compileOnly(libs.paucal)
+    compileOnly(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))
     compileOnly(libs.patchouli)
 }
 
@@ -62,7 +62,7 @@ sourceSets {
 }
 
 tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
-    kotlinOptions {
-        jvmTarget = "21"
+    compilerOptions {
+        jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_21)
     }
 }

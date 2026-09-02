@@ -1,19 +1,15 @@
 package coffee.cypher.hexbound.util
 
 import com.mojang.authlib.GameProfile
-import dev.cafeteria.fakeplayerapi.server.FakePlayerBuilder
-import dev.cafeteria.fakeplayerapi.server.FakeServerPlayer
-import net.minecraft.server.MinecraftServer
-import net.minecraft.server.world.ServerWorld
+import net.minecraft.world.entity.player.Player
+import net.minecraft.server.level.ServerPlayer
+import net.minecraft.server.level.ServerLevel
+import net.neoforged.neoforge.common.util.FakePlayerFactory
 
-abstract class HexboundFakePlayer(
-    builder: FakePlayerBuilder,
-    server: MinecraftServer,
-    world: ServerWorld,
-    profile: GameProfile
-) : FakeServerPlayer(builder, server, world, profile) {
-    fun resetToValidState() {
-        unsetRemoved()
-        health = maxHealth
+object HexboundFakePlayer {
+    fun create(world: ServerLevel, profile: GameProfile): ServerPlayer {
+        val player = FakePlayerFactory.get(world, profile)
+        player.health = player.maxHealth
+        return player
     }
 }
