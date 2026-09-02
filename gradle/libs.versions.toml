@@ -1,63 +1,20 @@
 [versions]
-# The latest versions are available at https://lambdaurora.dev/tools/import_quilt.html
-minecraft = "1.20.1"
-
-quilt_mappings = "1.20.1+build.7"
-quilt_loader = "0.19.2"
-qsl = "6.0.3+1.20.1"
-quilt-fapi = "7.0.4+0.84.0-1.20.1"
-qkl = "2.1.0+kt.1.8.22+flk.1.9.4"
-
-kotlin = "1.8.22"
-dokka = "1.8.20"
-
-paucal = "0.6.0-pre-118"
-hexcasting = "0.11.1-0"
-cca = "5.2.1"
-
-hexal = "9RtpOzVO"
-dynlights = "2.3.1+1.20.1"
-
-fake-player = "0.6.0"
-mixin-extras = "0.2.0-beta.8"
-geckolib = "4.2"
-kettle = "3.0.0+1.20.1"
-
-patchi = "1.20.1-80-FABRIC-SNAPSHOT"
+minecraft = "1.21.1"
+neoforge = "21.1.28"
+kotlin = "2.0.0"
+hexcasting = "1.21.1-0.12.0"
+paucal = "0.7.0"
+geckolib = "4.6.4"
+patchouli = "1.21-88-NEOFORGE"
+moddev = "2.0.74-beta"
 
 [libraries]
-minecraft = { module = "com.mojang:minecraft", version.ref = "minecraft" }
-quilt_mappings = { module = "org.quiltmc:quilt-mappings", version.ref = "quilt_mappings" }
-quilt_loader = { module = "org.quiltmc:quilt-loader", version.ref = "quilt_loader" }
-
-qsl = { module = "org.quiltmc:qsl", version.ref = "qsl" }
-quilt-fapi = { module = "org.quiltmc.quilted-fabric-api:quilted-fabric-api", version.ref = "quilt-fapi" }
-
-qkl = { module = "org.quiltmc.quilt-kotlin-libraries:quilt-kotlin-libraries", version.ref = "qkl" }
-
-hexcasting = { module = "at.petra-k.hexcasting:hexcasting-fabric-1.20.1", version.ref = "hexcasting" }
-paucal = { module = "at.petra-k.paucal:paucal-fabric-1.20.1", version.ref = "paucal" }
-cca = { module = "dev.onyxstudios.cardinal-components-api:cardinal-components-api", version.ref = "cca" }
-
-patchouli = { module = "vazkii.patchouli:Patchouli", version.ref = "patchi" }
-
-hexal = { module = "maven.modrinth:hexal", version.ref = "hexal" }
-dynlights = { module = "dev.lambdaurora:lambdynamiclights", version.ref = "dynlights" }
-
-fake-player = { module = "dev.cafeteria:fake-player-api", version.ref = "fake-player" }
-mixin-extras = { module = "com.github.llamalad7.mixinextras:mixinextras-fabric", version.ref = "mixin-extras" }
-geckolib = { module = "software.bernie.geckolib:geckolib-fabric-1.20", version.ref = "geckolib" }
-kettle = { module = "coffee.cypher.kettle:kettle", version.ref = "kettle" }
-
-[bundles]
-kotlin = ["qkl"]
-qsl = ["quilt-fapi", "qsl"]
-hexcasting = ["paucal", "hexcasting"]
-optionals = ["hexal", "dynlights"]
+minecraft = { module = "net.neoforged:neoforge", version.ref = "neoforge" }
+hexcasting = { module = "at.petra-k.hexcasting:hexcasting-neoforge-1.21.1", version.ref = "hexcasting" }
+paucal = { module = "at.petra-k.paucal:paucal-neoforge-1.21.1", version.ref = "paucal" }
+geckolib = { module = "software.bernie.geckolib:geckolib-neoforge-1.21.1", version.ref = "geckolib" }
+patchouli = { module = "vazkii.patchouli:Patchouli", version.ref = "patchouli" }
 
 [plugins]
-quilt_loom = { id = "org.quiltmc.loom", version = "1.2.+" }
+moddev = { id = "net.neoforged.moddev", version.ref = "moddev" }
 kotlin = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
-dokka = { id = "org.jetbrains.dokka", version.ref = "dokka" }
-nexus = { id = "io.github.gradle-nexus.publish-plugin", version = "1.1.0" }
-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
