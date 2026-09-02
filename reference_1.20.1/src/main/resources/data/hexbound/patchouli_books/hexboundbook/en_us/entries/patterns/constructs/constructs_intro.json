@@ -1,0 +1,41 @@
+{
+    "name": "hexbound.book.constructs.constructs_intro.title",
+    "category": "hexbound:patterns/constructs",
+    "icon": "minecraft:redstone",
+    "sortnum": 1,
+    "advancement": "hexcasting:root",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "hexbound.book.constructs.constructs_intro.1"
+        },
+        {
+            "type": "patchouli:text",
+            "text": "hexbound.book.constructs.constructs_intro.2"
+        },
+        {
+            "type": "patchouli:text",
+            "text": "hexbound.book.constructs.constructs_intro.3"
+        },
+        {
+            "type": "patchouli:text",
+            "text": "hexbound.book.constructs.constructs_intro.4"
+        },
+        {
+            "type": "hexcasting:pattern",
+            "op_id": "hexbound:instructions/send",
+            "input": "entity, [pattern]",
+            "output": "",
+            "text": "hexbound.book.constructs.constructs_intro.send",
+            "anchor": "hexbound:instructions/send"
+        },
+        {
+            "type": "hexcasting:pattern",
+            "op_id": "hexbound:construct_get_self",
+            "input": "",
+            "output": "entity",
+            "text": "hexbound.book.constructs.constructs_intro.construct_self",
+            "anchor": "hexbound:construct_get_self"
+        }
+    ]
+}

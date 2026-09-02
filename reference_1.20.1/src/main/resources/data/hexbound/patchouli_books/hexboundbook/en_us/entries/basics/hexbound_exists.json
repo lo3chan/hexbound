@@ -1,0 +1,13 @@
+{
+    "name": "hexbound.book.basics.hexbound_exists.title",
+    "category": "hexcasting:basics",
+    "icon": "hexbound:spider_construct_battery",
+    "sortnum": 1,
+    "advancement": "hexcasting:root",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "hexbound.book.basics.hexbound_exists.1"
+        }
+    ]
+}

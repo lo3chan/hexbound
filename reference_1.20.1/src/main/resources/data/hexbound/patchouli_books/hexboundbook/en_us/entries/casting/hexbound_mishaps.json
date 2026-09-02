@@ -1,0 +1,43 @@
+{
+    "name": "hexbound.book.casting.hexbound_mishaps.title",
+    "category": "hexcasting:casting",
+    "icon": "minecraft:rotten_flesh",
+    "sortnum": 199,
+    "advancement": "hexcasting:root",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "hexbound.book.casting.hexbound_mishaps.1"
+        },
+        {
+            "type": "patchouli:text",
+            "title": "hexbound.book.casting.hexbound_mishaps.construct.no_construct.title",
+            "text": "hexbound.book.casting.hexbound_mishaps.construct.no_construct.desc"
+        },
+        {
+            "type": "patchouli:text",
+            "title": "hexbound.book.casting.hexbound_mishaps.construct.missing_component.title",
+            "text": "hexbound.book.casting.hexbound_mishaps.construct.missing_component.desc"
+        },
+        {
+            "type": "patchouli:text",
+            "title": "hexbound.book.casting.hexbound_mishaps.construct.forbidden.title",
+            "text": "hexbound.book.casting.hexbound_mishaps.construct.forbidden.desc"
+        },
+        {
+            "type": "patchouli:text",
+            "title": "hexbound.book.casting.hexbound_mishaps.colorizer.not_set.title",
+            "text": "hexbound.book.casting.hexbound_mishaps.colorizer.not_set.desc"
+        },
+        {
+            "type": "patchouli:text",
+            "title": "hexbound.book.casting.hexbound_mishaps.colorizer.too_many.title",
+            "text": "hexbound.book.casting.hexbound_mishaps.colorizer.too_many.desc"
+        },
+        {
+            "type": "patchouli:text",
+            "title": "hexbound.book.casting.hexbound_mishaps.colorizer.missing_key.title",
+            "text": "hexbound.book.casting.hexbound_mishaps.colorizer.missing_key.desc"
+        }
+    ]
+}

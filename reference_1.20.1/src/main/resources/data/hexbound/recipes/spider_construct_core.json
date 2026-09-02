@@ -1,0 +1,29 @@
+{
+    "type": "minecraft:crafting_shaped",
+    "pattern": [
+        "GCG",
+        "GAG",
+        "LDL"
+    ],
+    "key": {
+        "G": {
+            "item": "minecraft:gold_ingot"
+        },
+        "C": {
+            "item": "minecraft:copper_ingot"
+        },
+        "A": {
+            "item": "minecraft:amethyst_block"
+        },
+        "L": {
+            "item": "hexcasting:lens"
+        },
+        "D": {
+            "item": "minecraft:diamond"
+        }
+    },
+    "result": {
+        "item": "hexbound:spider_construct_core",
+        "count": 1
+    }
+}

@@ -1,0 +1,43 @@
+{
+    "name": "hexbound.book.constructs.bind_broadcast.title",
+    "category": "hexbound:patterns/constructs",
+    "icon": "hexbound:construct_broadcaster",
+    "sortnum": 4,
+    "advancement": "hexcasting:root",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "hexbound.book.constructs.bind_broadcast.1"
+        },
+        {
+            "type": "patchouli:crafting",
+            "recipe": "hexbound:construct_broadcaster",
+            "title": "hexbound.book.constructs.bind_broadcast.broadcaster.title",
+            "text": "hexbound.book.constructs.bind_broadcast.broadcaster.desc"
+        },
+        {
+            "type": "hexcasting:pattern",
+            "op_id": "hexbound:instructions/broadcast",
+            "input": "vector, [pattern]",
+            "output": "",
+            "text": "hexbound.book.constructs.bind_broadcast.broadcast",
+            "anchor": "hexbound:instructions/broadcast"
+        },
+        {
+            "type": "patchouli:text",
+            "text": "hexbound.book.constructs.bind_broadcast.2"
+        },
+        {
+            "type": "hexcasting:pattern",
+            "op_id": "hexbound:bind_construct",
+            "input": "pattern | entity | null",
+            "output": "",
+            "text": "hexbound.book.constructs.bind_broadcast.bind",
+            "anchor": "hexbound:bind_construct"
+        },
+        {
+            "type": "patchouli:text",
+            "text": "hexbound.book.constructs.bind_broadcast.3"
+        }
+    ]
+}

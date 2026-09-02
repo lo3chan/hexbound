@@ -1,0 +1,7 @@
+{
+    "name": "hexbound.book.category.constructs.title",
+    "icon": "minecraft:redstone_block",
+    "description": "hexbound.book.category.constructs.desc",
+    "parent": "hexcasting:patterns",
+    "sortnum": 2
+}

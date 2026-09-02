@@ -1,0 +1,17 @@
+{
+    "name": "hexbound.book.casting.item_iotas.title",
+    "category": "hexcasting:casting",
+    "icon": "minecraft:bundle",
+    "sortnum": 198,
+    "advancement": "hexcasting:root",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "hexbound.book.casting.item_iotas.1"
+        },
+        {
+            "type": "patchouli:text",
+            "text": "hexbound.book.casting.item_iotas.2"
+        }
+    ]
+}

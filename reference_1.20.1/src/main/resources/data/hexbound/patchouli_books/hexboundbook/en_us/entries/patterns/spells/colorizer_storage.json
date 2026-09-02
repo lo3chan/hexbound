@@ -1,0 +1,38 @@
+{
+    "name": "hexbound.book.patterns.spells.colorizer_storage.title",
+    "category": "hexcasting:patterns/spells",
+    "icon": "hexcasting:pride_colorizer_plural",
+    "sortnum": 5.5,
+    "advancement": "hexcasting:root",
+    "read_by_default": true,
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "hexbound.book.patterns.spells.colorizer_storage.1"
+        },
+        {
+            "type": "hexcasting:pattern",
+            "op_id": "hexbound:colorizer/save",
+            "anchor": "hexbound:colorizer/save",
+            "input": "pattern",
+            "output": "",
+            "text": "hexbound.book.patterns.spells.colorizer_storage.save"
+        },
+        {
+            "type": "hexcasting:pattern",
+            "op_id": "hexbound:colorizer/load",
+            "anchor": "hexbound:colorizer/load",
+            "input": "pattern",
+            "output": "",
+            "text": "hexbound.book.patterns.spells.colorizer_storage.load"
+        },
+        {
+            "type": "hexcasting:pattern",
+            "op_id": "hexbound:colorizer/delete",
+            "anchor": "hexbound:colorizer/delete",
+            "input": "pattern",
+            "output": "",
+            "text": "hexbound.book.patterns.spells.colorizer_storage.delete"
+        }
+    ]
+}

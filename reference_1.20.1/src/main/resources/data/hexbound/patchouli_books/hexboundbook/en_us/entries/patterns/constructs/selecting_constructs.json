@@ -1,0 +1,33 @@
+{
+    "name": "hexbound.book.constructs.selecting_constructs.title",
+    "category": "hexbound:patterns/constructs",
+    "icon": "minecraft:wandering_trader_spawn_egg",
+    "sortnum": 5,
+    "advancement": "hexcasting:root",
+    "pages": [
+        {
+            "type": "hexcasting:pattern",
+            "op_id": "hexbound:get_entity/construct",
+            "input": "vector",
+            "output": "entity or null",
+            "text": "hexbound.book.constructs.selecting_constructs.single",
+            "anchor": "hexbound:get_entity/construct"
+        },
+        {
+            "type": "hexcasting:pattern",
+            "op_id": "hexbound:zone_entity/construct",
+            "input": "vector, number",
+            "output": "list",
+            "text": "hexbound.book.constructs.selecting_constructs.zone",
+            "anchor": "hexbound:zone_entity/construct"
+        },
+        {
+            "type": "hexcasting:pattern",
+            "op_id": "hexbound:zone_entity/not_construct",
+            "input": "vector, number",
+            "output": "list",
+            "text": "hexbound.book.constructs.selecting_constructs.zone_negate",
+            "anchor": "hexbound:zone_entity/not_construct"
+        }
+    ]
+}

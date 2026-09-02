@@ -1,0 +1,12 @@
+{
+    "parent": "minecraft:block/cube",
+    "textures": {
+        "down": "hexbound:block/construct_broadcaster/bottom",
+        "east": "hexbound:block/construct_broadcaster/right",
+        "north": "hexbound:block/construct_broadcaster/on/front",
+        "particle": "hexcasting:block/slate",
+        "south": "hexbound:block/construct_broadcaster/back",
+        "up": "hexbound:block/construct_broadcaster/on/top",
+        "west": "hexbound:block/construct_broadcaster/left"
+    }
+}

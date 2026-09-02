@@ -1,0 +1,17 @@
+{
+    "name": "hexcasting.spell.hexbound:set_fake_impetus_player",
+    "category": "hexcasting:patterns/great_spells",
+    "icon": "minecraft:spawner",
+    "sortnum": 99,
+    "advancement": "hexcasting:root",
+    "pages": [
+        {
+            "type": "hexcasting:pattern",
+            "op_id": "hexbound:set_fake_impetus_player",
+            "anchor": "hexbound:set_fake_impetus_player",
+            "input": "vector",
+            "output": "",
+            "text": "hexbound.book.patterns.great_spells.set_fake_impetus_player.1"
+        }
+    ]
+}

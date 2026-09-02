@@ -1,0 +1,20 @@
+{
+    "type": "minecraft:crafting_shaped",
+    "pattern": [
+        " IA",
+        "IAI",
+        "AI "
+    ],
+    "key": {
+        "A": {
+            "item": "hexcasting:charged_amethyst"
+        },
+        "I": {
+            "item": "minecraft:iron_ingot"
+        }
+    },
+    "result": {
+        "item": "hexbound:spider_construct_battery",
+        "count": 1
+    }
+}

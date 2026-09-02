@@ -1,0 +1,17 @@
+{
+    "name": "hexbound.book.casting.figments.title",
+    "category": "hexcasting:casting",
+    "icon": "minecraft:observer",
+    "sortnum": 999,
+    "advancement": "hexcasting:root",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "hexbound.book.casting.figments.1"
+        },
+        {
+            "type": "patchouli:text",
+            "text": "hexbound.book.casting.figments.2"
+        }
+    ]
+}

@@ -1,0 +1,18 @@
+{
+    "name": "hexbound.book.interop.hexal.title",
+    "category": "hexcasting:interop",
+    "icon": "minecraft:lantern",
+    "flag": "mod:hexal",
+    "sortnum": 1,
+    "advancement": "hexcasting:root",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "hexbound.book.interop.hexal.1"
+        },
+        {
+            "type": "patchouli:text",
+            "text": "hexbound.book.interop.hexal.2"
+        }
+    ]
+}

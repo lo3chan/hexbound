@@ -1,0 +1,41 @@
+{
+    "name": "hexbound.book.constructs.spider_construct.title",
+    "category": "hexbound:patterns/constructs",
+    "icon": "hexbound:spider_construct_core",
+    "sortnum": 3,
+    "advancement": "hexcasting:root",
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "hexbound.book.constructs.spider_construct.1"
+        },
+        {
+            "type": "patchouli:text",
+            "text": "hexbound.book.constructs.spider_construct.2"
+        },
+        {
+            "type": "patchouli:crafting",
+            "recipe": "hexbound:spider_construct_core",
+            "title": "hexbound.book.constructs.spider_construct.core.title",
+            "text": "hexbound.book.constructs.spider_construct.core.desc"
+        },
+        {
+            "type": "patchouli:crafting",
+            "recipe": "hexbound:spider_construct_battery",
+            "title": "hexbound.book.constructs.spider_construct.battery.title",
+            "text": "hexbound.book.constructs.spider_construct.battery.desc"
+        },
+        {
+            "type": "patchouli:text",
+            "text": "hexbound.book.constructs.spider_construct.3"
+        },
+        {
+            "type": "hexcasting:pattern",
+            "op_id": "hexbound:create_construct/spider",
+            "input": "entity, entity, entity",
+            "output": "",
+            "text": "hexbound.book.constructs.spider_construct.create",
+            "anchor": "hexbound:create_construct/spider"
+        }
+    ]
+}

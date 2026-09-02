@@ -1,0 +1,62 @@
+{
+    "name": "hexbound.book.patterns.pattern_editing.title",
+    "category": "hexcasting:patterns",
+    "icon": "minecraft:nautilus_shell",
+    "sortnum": 8.5,
+    "advancement": "hexcasting:root",
+    "read_by_default": true,
+    "pages": [
+        {
+            "type": "patchouli:text",
+            "text": "hexbound.book.patterns.pattern_editing.1"
+        },
+        {
+            "type": "hexcasting:pattern",
+            "op_id": "hexbound:pattern/line_count",
+            "anchor": "hexbound:pattern/line_count",
+            "input": "pattern",
+            "output": "num",
+            "text": "hexbound.book.patterns.pattern_editing.line_count"
+        },
+        {
+            "type": "hexcasting:pattern",
+            "op_id": "hexbound:pattern/start_dir",
+            "anchor": "hexbound:pattern/start_dir",
+            "input": "pattern",
+            "output": "num",
+            "text": "hexbound.book.patterns.pattern_editing.start_dir"
+        },
+        {
+            "type": "hexcasting:pattern",
+            "op_id": "hexbound:pattern/rotate",
+            "anchor": "hexbound:pattern/rotate",
+            "input": "pattern, num",
+            "output": "pattern",
+            "text": "hexbound.book.patterns.pattern_editing.rotate"
+        },
+        {
+            "type": "hexcasting:pattern",
+            "op_id": "hexbound:pattern/merge",
+            "anchor": "hexbound:pattern/merge",
+            "input": "pattern, pattern",
+            "output": "pattern",
+            "text": "hexbound.book.patterns.pattern_editing.merge"
+        },
+        {
+            "type": "hexcasting:pattern",
+            "op_id": "hexbound:pattern/head",
+            "anchor": "hexbound:pattern/head",
+            "input": "pattern, num",
+            "output": "pattern",
+            "text": "hexbound.book.patterns.pattern_editing.head"
+        },
+        {
+            "type": "hexcasting:pattern",
+            "op_id": "hexbound:pattern/tail",
+            "anchor": "hexbound:pattern/tail",
+            "input": "pattern, num",
+            "output": "pattern",
+            "text": "hexbound.book.patterns.pattern_editing.tail"
+        }
+    ]
+}
