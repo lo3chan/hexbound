@@ -4,13 +4,13 @@ import coffee.cypher.hexbound.feature.construct.entity.SpiderConstructEntity
 import coffee.cypher.hexbound.init.Hexbound
 import coffee.cypher.hexbound.init.config.HexboundConfig
 import com.mojang.blaze3d.vertex.VertexConsumer
-import net.minecraft.client.render.RenderLayer
-import net.minecraft.client.render.VertexConsumerProvider
-import net.minecraft.client.render.entity.EntityRendererFactory
-import net.minecraft.client.util.math.MatrixStack
-import net.minecraft.item.ItemStack
-import net.minecraft.util.Identifier
-import net.minecraft.util.math.Axis
+import com.mojang.blaze3d.vertex.PoseStack
+import net.minecraft.client.renderer.RenderType
+import net.minecraft.client.renderer.MultiBufferSource
+import net.minecraft.client.renderer.entity.EntityRendererProvider
+import net.minecraft.world.item.ItemStack
+import net.minecraft.resources.ResourceLocation
+import com.mojang.math.Axis
 import software.bernie.geckolib.cache.`object`.BakedGeoModel
 import software.bernie.geckolib.cache.`object`.GeoBone
 import software.bernie.geckolib.model.GeoModel
@@ -20,7 +20,7 @@ import software.bernie.geckolib.renderer.layer.BlockAndItemGeoLayer
 import software.bernie.geckolib.renderer.layer.GeoRenderLayer
 
 class SpiderConstructRenderer(
-    renderManager: EntityRendererFactory.Context
+    renderManager: EntityRendererProvider.Context
 ) : GeoEntityRenderer<SpiderConstructEntity>(
     renderManager,
     SpiderConstructModel()
@@ -44,21 +44,21 @@ class SpiderConstructModel : GeoModel<SpiderConstructEntity>() {
         val ALT_LAYER_TEXTURE_RESOURCE = Hexbound.id("textures/construct/robot_construct_translucent.png")
     }
 
-    override fun getModelResource(obj: SpiderConstructEntity): Identifier {
+    override fun getModelResource(obj: SpiderConstructEntity): ResourceLocation {
         return if (obj.isAltModelEnabled || HexboundConfig.replaceSpiderConstruct)
             ALT_MODEL_RESOURCE
         else
             MODEL_RESOURCE
     }
 
-    override fun getTextureResource(obj: SpiderConstructEntity): Identifier {
+    override fun getTextureResource(obj: SpiderConstructEntity): ResourceLocation {
         return if (obj.isAltModelEnabled || HexboundConfig.replaceSpiderConstruct)
             ALT_TEXTURE_RESOURCE
         else
             TEXTURE_RESOURCE
     }
 
-    override fun getAnimationResource(animatable: SpiderConstructEntity): Identifier {
+    override fun getAnimationResource(animatable: SpiderConstructEntity): ResourceLocation {
         return if (animatable.isAltModelEnabled || HexboundConfig.replaceSpiderConstruct)
             ALT_ANIMATION_RESOURCE
         else
@@ -78,18 +78,18 @@ class SpiderConstructItemLayer(
     }
 
     override fun renderStackForBone(
-        poseStack: MatrixStack,
-        bone: GeoBone?,
-        stack: ItemStack?,
-        animatable: SpiderConstructEntity?,
-        bufferSource: VertexConsumerProvider?,
+        poseStack: PoseStack,
+        bone: GeoBone,
+        stack: ItemStack,
+        animatable: SpiderConstructEntity,
+        bufferSource: MultiBufferSource,
         partialTick: Float,
         packedLight: Int,
         packedOverlay: Int
     ) {
-        poseStack.push()
+        poseStack.pushPose()
         poseStack.scale(0.25f, 0.25f, 0.25f)
-        poseStack.multiply(Axis.X_POSITIVE.rotationDegrees(90f))
+        poseStack.mulPose(Axis.XP.rotationDegrees(90f))
 
         super.renderStackForBone(
             poseStack,
@@ -102,7 +102,7 @@ class SpiderConstructItemLayer(
             packedOverlay
         )
 
-        poseStack.pop()
+        poseStack.popPose()
     }
 }
 
@@ -111,11 +111,11 @@ class SpiderConstructTranslucentLayer(
 ) : GeoRenderLayer<SpiderConstructEntity>(renderer) {
 
     override fun render(
-        poseStack: MatrixStack,
+        poseStack: PoseStack,
         animatable: SpiderConstructEntity,
         bakedModel: BakedGeoModel,
-        renderType: RenderLayer,
-        bufferSource: VertexConsumerProvider,
+        renderType: RenderType,
+        bufferSource: MultiBufferSource,
         buffer: VertexConsumer,
         partialTick: Float,
         packedLight: Int,
@@ -126,12 +126,13 @@ class SpiderConstructTranslucentLayer(
         else
             SpiderConstructModel.LAYER_TEXTURE_RESOURCE
 
-        val layer = RenderLayer.getEntityTranslucentCull(layerTexture)
+        val layer = RenderType.entityTranslucentCull(layerTexture)
+        val builder = bufferSource.getBuffer(layer)
 
-        poseStack.push()
-        renderer.preRender(poseStack, animatable, bakedModel, bufferSource, bufferSource.getBuffer(layer), false, partialTick, packedLight, packedOverlay, 1f, 1f, 1f, 1f);
-        renderer.actuallyRender(poseStack, animatable, bakedModel, renderType, bufferSource, bufferSource.getBuffer(layer), false, partialTick, packedLight, packedOverlay, 1f, 1f, 1f, 1f)
-        renderer.postRender(poseStack, animatable, bakedModel, bufferSource, bufferSource.getBuffer(layer), false, partialTick, packedLight, packedOverlay, 1f, 1f, 1f, 1f)
-        poseStack.pop()
+        poseStack.pushPose()
+        renderer.preRender(poseStack, animatable, bakedModel, bufferSource, builder, false, partialTick, packedLight, packedOverlay, packedOverlay)
+        renderer.actuallyRender(poseStack, animatable, bakedModel, layer, bufferSource, builder, false, partialTick, packedLight, packedOverlay, packedOverlay)
+        renderer.postRender(poseStack, animatable, bakedModel, bufferSource, builder, false, partialTick, packedLight, packedOverlay, packedOverlay)
+        poseStack.popPose()
     }
 }
