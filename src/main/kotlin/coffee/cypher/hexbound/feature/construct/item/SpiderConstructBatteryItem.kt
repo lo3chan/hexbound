@@ -16,18 +16,7 @@ import net.minecraft.world.item.component.CustomData
 
 class SpiderConstructBatteryItem(properties: Properties) : Item(properties.stacksTo(1)), MediaHolderItem {
     val maxCharge: Long
-        get() = (100 * MediaConstants.DUST_UNIT).toLong()
-
-    var ItemStack.charge: Long
-        get() {
-            val customData = this.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY)
-            return if (customData.contains("charge")) customData.copyTag().getLong("charge") else 0L
-        }
-        set(value) {
-            CustomData.update(DataComponents.CUSTOM_DATA, this) { tag ->
-                tag.putLong("charge", value)
-            }
-        }
+        get() = (HexboundConfig.spiderBatteryChargeRequired * MediaConstants.DUST_UNIT).toLong()
 
     override fun getMedia(stack: ItemStack): Long {
         return stack.charge
@@ -86,6 +75,17 @@ class SpiderConstructBatteryItem(properties: Properties) : Item(properties.stack
     }
 
     companion object {
+        var ItemStack.charge: Long
+            get() {
+                val customData = this.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY)
+                return if (customData.contains("charge")) customData.copyTag().getLong("charge") else 0L
+            }
+            set(value) {
+                CustomData.update(DataComponents.CUSTOM_DATA, this) { tag ->
+                    tag.putLong("charge", value)
+                }
+            }
+
         fun isFullyCharged(stack: ItemStack): Boolean {
             val battery = stack.item as? SpiderConstructBatteryItem ?: return false
             return stack.charge >= battery.maxCharge

@@ -27,11 +27,10 @@ import net.minecraft.world.level.Level
 import software.bernie.geckolib.animatable.GeoEntity
 import software.bernie.geckolib.constant.DefaultAnimations
 import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache
-import software.bernie.geckolib.core.animation.AnimatableManager
-import software.bernie.geckolib.core.animation.AnimationController
+import software.bernie.geckolib.animation.AnimatableManager
+import software.bernie.geckolib.animation.AnimationController
 import software.bernie.geckolib.animation.RawAnimation
-import software.bernie.geckolib.core.`object`.PlayState
-import software.bernie.geckolib.animatable.instance.InstancedAnimatableInstanceCache
+import software.bernie.geckolib.animation.PlayState
 import software.bernie.geckolib.util.GeckoLibUtil
 
 class SpiderConstructEntity(
@@ -42,7 +41,7 @@ class SpiderConstructEntity(
     var isAltModelEnabled by ALT_MODEL_ENABLED
 
     private var songSource: BlockPos? = null
-    private val animationCache = GeckoLibUtil.createInstanceCache(this)
+    private val animationCache: AnimatableInstanceCache = GeckoLibUtil.createInstanceCache(this)
 
     init {
         registerComponent(ItemHolderComponent, this)
@@ -64,77 +63,74 @@ class SpiderConstructEntity(
         }
     }
 
-    override fun initDataTracker() {
-        super.initDataTracker()
-        dataTracker.startTracking(ALT_MODEL_ENABLED, false)
-        dataTracker.startTracking(HELD_STACK, ItemStack.EMPTY)
+    override fun defineSynchedData(builder: SynchedEntityData.Builder) {
+        super.defineSynchedData(builder)
+        builder.define(ALT_MODEL_ENABLED, false)
+        builder.define(HELD_STACK, ItemStack.EMPTY)
     }
 
-    override fun interactMob(player: PlayerEntity, hand: Hand): ActionResult {
-        val item = player.getStackInHand(hand).item
+    override fun mobInteract(player: Player, hand: InteractionHand): InteractionResult {
+        val item = player.getItemInHand(hand).item
 
-        if (player.isSneaking && (item == Items.IRON_BLOCK || item == Items.AMETHYST_BLOCK)) {
-            if (!world.isClient) {
-                val serverPlayer = player as ServerPlayerEntity
+        if (player.isShiftKeyDown && (item == Items.IRON_BLOCK || item == Items.AMETHYST_BLOCK)) {
+            if (!level().isClientSide) {
+                val serverPlayer = player as ServerPlayer
 
-                if (!serverPlayer.interactionManager.gameMode.isBlockBreakingRestricted) {
+                if (!serverPlayer.gameMode.isBlockBreakingRestricted) {
                     isAltModelEnabled = item == Items.IRON_BLOCK
                 }
             } else {
-                player.playSound(SoundEvents.ITEM_ARMOR_EQUIP_GENERIC)
+                player.playSound(SoundEvents.ARMOR_EQUIP_GENERIC.value())
             }
 
-            return ActionResult.SUCCESS
+            return InteractionResult.SUCCESS
         }
 
-        return super.interactMob(player, hand)
+        return super.mobInteract(player, hand)
     }
 
     override fun tick() {
         super.tick()
-        fakePlayer?.setStackInHand(Hand.MAIN_HAND, heldStack)
+        fakePlayer?.setItemInHand(InteractionHand.MAIN_HAND, heldStack)
     }
 
-    override fun getInteractionPlayer(world: ServerWorld): ServerPlayerEntity {
+    override fun getInteractionPlayer(world: ServerLevel): ServerPlayer {
         return fakePlayer!!
     }
 
-    override fun equipStack(slot: EquipmentSlot, stack: ItemStack) {
+    override fun setItemSlot(slot: EquipmentSlot, stack: ItemStack) {
         if (slot == EquipmentSlot.MAINHAND) {
             heldStack = stack
         }
     }
 
-    override fun getEquippedStack(slot: EquipmentSlot): ItemStack {
+    override fun getItemBySlot(slot: EquipmentSlot): ItemStack {
         return when (slot) {
             EquipmentSlot.MAINHAND -> heldStack
             else -> ItemStack.EMPTY
         }
     }
 
-    override fun setNearbySongPlaying(songPosition: BlockPos?, playing: Boolean) {
-        songSource = if (playing)
-            songPosition
-        else
-            null
+    override fun setRecordPlayingNearby(songPosition: BlockPos, playing: Boolean) {
+        songSource = if (playing) songPosition else null
     }
 
     private fun canDance(): Boolean {
-        val dist = songSource?.getSquaredDistanceToCenter(x, y, z)
-
-        return dist != null && dist <= 36 && command == null
+        val dist = songSource?.let { position().distanceToSqr(it.x + 0.5, it.y + 0.5, it.z + 0.5) }
+        return dist != null && dist <= 36.0 && command == null
     }
 
     override fun getDefaultName(): Component {
-        return redirectSpiderLang(super.getDefaultName(), this) as Component
+        val name = super.getDefaultName()
+        return redirectSpiderLang(name.string, this).let { Component.literal(it) }
     }
 
-    override fun registerControllers(data: software.bernie.geckolib.animation.AnimatableManager.ControllerRegistrar) {
+    override fun registerControllers(data: AnimatableManager.ControllerRegistrar) {
         data.add(animationController)
     }
 
     override fun getAnimatableInstanceCache(): AnimatableInstanceCache {
-        return animationCache as AnimatableInstanceCache
+        return animationCache
     }
 
     override fun addAdditionalSaveData(nbt: CompoundTag) {
@@ -155,7 +151,7 @@ class SpiderConstructEntity(
 
     companion object {
         fun createType(): EntityType<SpiderConstructEntity> {
-            return EntityType.Builder.of(EntityType.EntityFactory { type, level -> SpiderConstructEntity(type, level) }, MobCategory.MISC)
+            return EntityType.Builder.of(::SpiderConstructEntity, MobCategory.MISC)
                 .sized(1.25f, 0.75f)
                 .clientTrackingRange(8)
                 .build("spider_construct")
@@ -169,12 +165,12 @@ class SpiderConstructEntity(
         private val DANCE_ANIMATION = RawAnimation.begin().thenLoop("dance")
 
         val ALT_MODEL_ENABLED: EntityDataAccessor<Boolean> = SynchedEntityData.defineId(
-            SpiderConstructEntity::class.java as Class<out net.minecraft.network.syncher.SyncedDataHolder>,
+            SpiderConstructEntity::class.java,
             EntityDataSerializers.BOOLEAN
         )
 
         val HELD_STACK: EntityDataAccessor<ItemStack> = SynchedEntityData.defineId(
-            SpiderConstructEntity::class.java as Class<out net.minecraft.network.syncher.SyncedDataHolder>,
+            SpiderConstructEntity::class.java,
             EntityDataSerializers.ITEM_STACK
         )
     }

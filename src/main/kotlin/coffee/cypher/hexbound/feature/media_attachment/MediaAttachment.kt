@@ -14,7 +14,6 @@ fun getMediaAttachmentForStack(stack: ItemStack): ADMediaHolder? {
         override fun canProvide(): Boolean = true
         override fun canRecharge(): Boolean = false
         override fun getConsumptionPriority(): Int = attachment.priority
-        override fun canConstructHolder(): Boolean = false
-        override fun writeMediaHolder(tag: net.minecraft.nbt.CompoundTag?): net.minecraft.nbt.CompoundTag? = tag
+        override fun canConstructBattery(): Boolean = false
     }
 }

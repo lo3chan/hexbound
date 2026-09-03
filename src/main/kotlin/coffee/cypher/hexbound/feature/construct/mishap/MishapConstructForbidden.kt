@@ -14,7 +14,7 @@ class MishapConstructForbidden(val construct: AbstractConstructEntity) : Mishap(
     }
 
     override fun errorMessage(ctx: CastingEnvironment, errorCtx: Context): Component {
-        return error("construct_forbidden", construct.displayName, construct.boundPlayerData?.displayName ?: "")
+        return error("construct_forbidden", construct.displayName, construct.boundPlayerData?.displayName ?: Component.literal(""))
     }
 
     override fun execute(ctx: CastingEnvironment, errorCtx: Context, stack: MutableList<Iota>) {
