@@ -1,6 +1,6 @@
 package coffee.cypher.hexbound.feature.combat.status_effects
 
-import net.minecraft.entity.effect.StatusEffect
-import net.minecraft.entity.effect.StatusEffectType
+import net.minecraft.world.effect.MobEffect
+import net.minecraft.world.effect.MobEffectCategory
 
-class ReducedAmbitStatusEffect : StatusEffect(StatusEffectType.HARMFUL, 0x2A0134)
+class ReducedAmbitStatusEffect : MobEffect(MobEffectCategory.HARMFUL, 0x2A0134)

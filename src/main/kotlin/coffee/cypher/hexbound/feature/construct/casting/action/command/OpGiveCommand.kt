@@ -11,9 +11,8 @@ import coffee.cypher.hexbound.feature.construct.entity.component.InteractionComp
 import coffee.cypher.hexbound.feature.construct.entity.component.ItemHolderComponent
 import coffee.cypher.hexbound.feature.construct.mishap.MishapMissingConstructComponent
 import coffee.cypher.hexbound.util.requireConstruct
-import net.minecraft.util.math.Direction
-import net.minecraft.util.math.Vec3d
-import org.quiltmc.qkl.library.math.minus
+import net.minecraft.core.Direction
+import net.minecraft.world.phys.Vec3
 
 abstract class OpGiveCommand : ConstMediaAction {
     override val argc: Int
@@ -31,20 +30,48 @@ abstract class OpGiveCommand : ConstMediaAction {
             construct
         )
 
-        construct.executeCommand(command, callback, env.world)
-
-        return emptyList()
+        return construct.executeCommand(
+            command,
+            callback,
+            env.world
+        )
     }
 
-    protected fun <T : Any> AbstractConstructEntity.requireComponent(key: ConstructComponentKey<T>): T {
-        return getComponent(key) ?: throw MishapMissingConstructComponent(this, key)
-    }
-
-    protected abstract fun getCommand(
+    abstract fun getCommand(
         args: List<Iota>,
         ctx: CastingEnvironment,
         constructEntity: AbstractConstructEntity
     ): ConstructCommand<*>
+
+    protected fun <T : Any> AbstractConstructEntity.requireComponent(key: ConstructComponentKey<T>): T {
+        return getComponent(key) ?: throw MishapMissingConstructComponent(this, key)
+    }
+}
+
+object OpGiveCommandNoOp : OpGiveCommand() {
+    override val baseArgc = 0
+
+    override fun getCommand(
+        args: List<Iota>,
+        ctx: CastingEnvironment,
+        constructEntity: AbstractConstructEntity
+    ): ConstructCommand<*> {
+        return NoOpCommand()
+    }
+}
+
+object OpGiveCommandMoveTo : OpGiveCommand() {
+    override val baseArgc = 1
+
+    override fun getCommand(
+        args: List<Iota>,
+        ctx: CastingEnvironment,
+        constructEntity: AbstractConstructEntity
+    ): ConstructCommand<*> {
+        val pos = args.getVec3(0, argc)
+
+        return MoveTo(pos)
+    }
 }
 
 object OpGiveCommandPickUp : OpGiveCommand() {
@@ -56,6 +83,7 @@ object OpGiveCommandPickUp : OpGiveCommand() {
         constructEntity: AbstractConstructEntity
     ): ConstructCommand<*> {
         val target = args.getItemEntity(0, argc)
+
         constructEntity.requireComponent(ItemHolderComponent)
 
         return PickUp(target.uuid)
@@ -73,20 +101,6 @@ object OpGiveCommandDropOff : OpGiveCommand() {
         constructEntity.requireComponent(ItemHolderComponent)
 
         return DropOff()
-    }
-}
-
-object OpGiveCommandMoveTo : OpGiveCommand() {
-    override val baseArgc = 1
-
-    override fun getCommand(
-        args: List<Iota>,
-        ctx: CastingEnvironment,
-        constructEntity: AbstractConstructEntity
-    ): ConstructCommand<*> {
-        val pos = args.getVec3(0, argc)
-
-        return MoveTo(pos)
     }
 }
 
@@ -117,14 +131,14 @@ object OpGiveCommandUseOnBlock : OpGiveCommand() {
         val pos = args.getBlockPos(0, argc)
         val side = args.getVec3(1, argc)
 
-        val sideVec = if (side == Vec3d.ZERO) {
-            constructEntity.pos - Vec3d.ofCenter(pos)
+        val sideVec = if (side == Vec3.ZERO) {
+            constructEntity.position().subtract(Vec3.atCenterOf(pos))
         } else {
             side
         }
 
         constructEntity.requireComponent(InteractionComponent)
 
-        return UseItemOnBlock(pos, Direction.getFacing(sideVec.x, sideVec.y, sideVec.z))
+        return UseItemOnBlock(pos, Direction.getNearest(sideVec.x, sideVec.y, sideVec.z))
     }
 }

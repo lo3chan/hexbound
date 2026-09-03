@@ -13,7 +13,7 @@ import coffee.cypher.hexbound.feature.construct.entity.AbstractConstructEntity
 import coffee.cypher.hexbound.feature.construct.mishap.MishapConstructForbidden
 import coffee.cypher.hexbound.util.MemorizedPlayerData
 import coffee.cypher.hexbound.util.getConstruct
-import net.minecraft.entity.player.PlayerEntity
+import net.minecraft.world.entity.player.Player
 
 object OpBindConstruct : SpellAction {
     override val argc = 2
@@ -31,8 +31,8 @@ object OpBindConstruct : SpellAction {
                 return SpellAction.Result(PatternSpell(construct, req.pattern), 0, emptyList())
             }
             is EntityIota -> {
-                if (req.entity is PlayerEntity) {
-                    return SpellAction.Result(PlayerSpell(construct, MemorizedPlayerData.forPlayer(req.entity as PlayerEntity)), 0, emptyList())
+                if (req.entity is Player) {
+                    return SpellAction.Result(PlayerSpell(construct, MemorizedPlayerData.fromPlayer(req.entity as Player)), 0, emptyList())
                 }
             }
             is NullIota -> {

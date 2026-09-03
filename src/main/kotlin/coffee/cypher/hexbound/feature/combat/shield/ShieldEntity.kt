@@ -3,56 +3,48 @@ package coffee.cypher.hexbound.feature.combat.shield
 import at.petrak.hexcasting.api.pigment.FrozenPigment
 import at.petrak.hexcasting.common.particles.ConjureParticleOptions
 import at.petrak.hexcasting.xplat.IXplatAbstractions
-import coffee.cypher.hexbound.util.provideDelegate
-import coffee.cypher.hexbound.util.times
-import net.minecraft.entity.*
-import net.minecraft.entity.data.DataTracker
-import net.minecraft.entity.data.TrackedData
-import net.minecraft.entity.data.TrackedDataHandlerRegistry
-import net.minecraft.entity.player.PlayerEntity
-import net.minecraft.nbt.NbtCompound
-import net.minecraft.network.listener.ClientPlayPacketListener
-import net.minecraft.network.packet.Packet
-import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket
-import net.minecraft.util.Util
-import net.minecraft.util.math.Box
-import net.minecraft.util.math.Vec3d
-import net.minecraft.world.World
-import org.quiltmc.qkl.library.math.minus
-import org.quiltmc.qkl.library.math.plus
-import org.quiltmc.qkl.library.math.unaryMinus
+import net.minecraft.Util
+import net.minecraft.nbt.CompoundTag
+import net.minecraft.network.syncher.EntityDataAccessor
+import net.minecraft.network.syncher.EntityDataSerializers
+import net.minecraft.network.syncher.SynchedEntityData
+import net.minecraft.world.entity.Entity
+import net.minecraft.world.entity.EntityType
+import net.minecraft.world.entity.MobCategory
+import net.minecraft.world.entity.player.Player
+import net.minecraft.world.level.Level
+import net.minecraft.world.phys.AABB
+import net.minecraft.world.phys.Vec3
 import java.util.function.BiFunction
 import kotlin.math.abs
 
 class ShieldEntity(
     type: EntityType<ShieldEntity>,
-    world: World,
-    val owner: PlayerEntity?,
-    val maxAge: Int,
-    initialVisualType: VisualType
-) : Entity(type, world) {
-    var pigmentTag by COLORIZER
-    var typeOrdinal by VISUAL_TYPE
+    level: Level,
+    val owner: Player? = null,
+    val maxAge: Int = 200,
+    initialVisualType: VisualType = VisualType.REGULAR
+) : Entity(type, level) {
 
     private val pigmentMemo = Util.memoize(FrozenPigment::fromNBT)
     private val basisMemo = Util.memoize(BiFunction(ShieldEntity::calculateBasis))
 
-    private var lockedPosition: Triple<Vec3d, Float, Float>? = null
+    private var lockedPosition: Triple<Vec3, Float, Float>? = null
 
     fun lockPosition() {
-        lockedPosition = Triple(pos, pitch, yaw)
+        lockedPosition = Triple(position(), xRot, yRot)
     }
 
     var pigment: FrozenPigment
-        get() = pigmentMemo.apply(pigmentTag)
+        get() = pigmentMemo.apply(entityData.get(COLORIZER))
         set(value) {
-            pigmentTag = value.serializeToNBT()
+            entityData.set(COLORIZER, value.serializeToNBT())
         }
 
     var visualType: VisualType
-        get() = VisualType.values()[typeOrdinal]
+        get() = VisualType.values()[entityData.get(VISUAL_TYPE)]
         set(value) {
-            typeOrdinal = value.ordinal
+            entityData.set(VISUAL_TYPE, value.ordinal)
         }
 
     init {
@@ -65,50 +57,21 @@ class ShieldEntity(
         visualType = initialVisualType
     }
 
-    override fun getHeadYaw(): Float {
-        return yaw
+    override fun shouldSave(): Boolean = false
+
+    override fun isPickable(): Boolean = true
+
+    override fun defineSynchedData(builder: SynchedEntityData.Builder) {
+        builder.define(COLORIZER, FrozenPigment.DEFAULT.get().serializeToNBT())
+        builder.define(VISUAL_TYPE, 0)
     }
 
-    override fun shouldSave(): Boolean {
-        return false
-    }
+    override fun readAdditionalSaveData(compound: CompoundTag) {}
 
-    override fun collides(): Boolean {
-        return true
-    }
+    override fun addAdditionalSaveData(compound: CompoundTag) {}
 
-    override fun initDataTracker() {
-
-        dataTracker.startTracking(COLORIZER, FrozenPigment.DEFAULT.get().serializeToNBT())
-        dataTracker.startTracking(VISUAL_TYPE, 0)
-    }
-
-    override fun readCustomDataFromNbt(nbt: NbtCompound) {
-    }
-
-    override fun writeCustomDataToNbt(nbt: NbtCompound) {
-    }
-
-    override fun createSpawnPacket(): Packet<ClientPlayPacketListener> {
-        return EntitySpawnS2CPacket(this)
-    }
-
-    override fun getEyeHeight(pose: EntityPose, dimensions: EntityDimensions): Float {
-        return dimensions.height / 2
-    }
-
-    override fun calculateBoundingBox(): Box {
-        val (forward, up, right) = getBasis()
-        val center = pos + Vec3d(0.0, 1.3125, 0.0)
-        val halfDiagonal = right * 1.5 + up * 1.3125 + forward * 0.05
-        return Box(center - halfDiagonal, center + halfDiagonal)
-    }
-
-    fun getBasis(): Triple<Vec3d, Vec3d, Vec3d> {
-        if (basisMemo == null) {
-            return calculateBasis(pitch, yaw)
-        }
-        return basisMemo.apply(pitch, yaw)
+    fun getBasis(): Triple<Vec3, Vec3, Vec3> {
+        return basisMemo.apply(xRot, yRot)
     }
 
     override fun tick() {
@@ -118,21 +81,21 @@ class ShieldEntity(
             discard()
         }
 
-        if (!world.isClient && age > maxAge) {
+        if (!level().isClientSide && tickCount > maxAge) {
             discard()
         }
 
-        if (age == DEPLOY_TIME && world.isClient) {
+        if (tickCount == DEPLOY_TIME && level().isClientSide) {
             val (_, up, right) = getBasis()
 
             listOf(
-                -right * 1.5 + up * 1.625,
-                -right * 1.5 + up,
-                right * 1.5 + up * 1.625,
-                right * 1.5 + up
+                right.scale(-1.5).add(up.scale(1.625)),
+                right.scale(-1.5).add(up),
+                right.scale(1.5).add(up.scale(1.625)),
+                right.scale(1.5).add(up)
             ).forEach {
-                world.addParticle(
-                    ConjureParticleOptions(pigment.colorProvider.getColor(world.time.toFloat(), it)),
+                level().addParticle(
+                    ConjureParticleOptions(pigment.colorProvider.getColor(level().gameTime.toFloat(), it)),
                     x + it.x, y + it.y, z + it.z,
                     0.0, 0.0, 0.0
                 )
@@ -140,7 +103,7 @@ class ShieldEntity(
         }
 
         lockedPosition?.let { (lockedPos, lockedPitch, lockedYaw) ->
-            if (lockedPos.distanceTo(pos) > 0.1 || abs(pitch - lockedPitch) % 360 > 2 || abs(yaw - lockedYaw) % 360 > 2) {
+            if (lockedPos.distanceTo(position()) > 0.1 || abs(xRot - lockedPitch) % 360 > 2 || abs(yRot - lockedYaw) % 360 > 2) {
                 discard()
             }
         }
@@ -149,14 +112,14 @@ class ShieldEntity(
     companion object {
         const val DEPLOY_TIME = 3
 
-        val COLORIZER: TrackedData<NbtCompound> =
-            DataTracker.registerData(ShieldEntity::class.java, TrackedDataHandlerRegistry.TAG_COMPOUND)
+        val COLORIZER: EntityDataAccessor<CompoundTag> =
+            SynchedEntityData.defineId(ShieldEntity::class.java, EntityDataSerializers.COMPOUND_TAG)
 
-        val VISUAL_TYPE: TrackedData<Int> =
-            DataTracker.registerData(ShieldEntity::class.java, TrackedDataHandlerRegistry.INTEGER)
+        val VISUAL_TYPE: EntityDataAccessor<Int> =
+            SynchedEntityData.defineId(ShieldEntity::class.java, EntityDataSerializers.INT)
 
         fun createType(): EntityType<ShieldEntity> {
-            return EntityType.Builder.of({ type, world -> ShieldEntity(type, world, null, 200, VisualType.REGULAR) }, SpawnGroup.MISC)
+            return EntityType.Builder.of({ type, world -> ShieldEntity(type, world, null, 200, VisualType.REGULAR) }, MobCategory.MISC)
                 .fireImmune()
                 .noSave()
                 .noSummon()
@@ -166,22 +129,22 @@ class ShieldEntity(
         }
 
         @JvmStatic
-        fun canBypassShieldForDirection(direction: Vec3d, shield: Entity): Boolean {
+        fun canBypassShieldForDirection(direction: Vec3, shield: Entity): Boolean {
             if (shield !is ShieldEntity) {
                 return false
             }
 
-            return direction.dotProduct(Vec3d.fromPolar(shield.pitch, shield.yaw)) >= 0
+            return direction.dot(Vec3.directionFromRotation(shield.xRot, shield.yRot)) >= 0
         }
 
-        private fun calculateBasis(pitch: Float, yaw: Float): Triple<Vec3d, Vec3d, Vec3d> {
-            val forward = Vec3d.fromPolar(pitch, yaw)
+        private fun calculateBasis(pitch: Float, yaw: Float): Triple<Vec3, Vec3, Vec3> {
+            val forward = Vec3.directionFromRotation(pitch, yaw)
 
-            val up = Vec3d(0.0, 1.0, 0.0)
-                .rotateX(pitch * Math.PI.toFloat() / 180f)
-                .rotateY(yaw * Math.PI.toFloat() / 180f)
+            val up = Vec3(0.0, 1.0, 0.0)
+                .xRot(pitch * Math.PI.toFloat() / 180f)
+                .yRot(yaw * Math.PI.toFloat() / 180f)
 
-            val right = forward.crossProduct(up)
+            val right = forward.cross(up)
 
             return Triple(forward, up, right)
         }

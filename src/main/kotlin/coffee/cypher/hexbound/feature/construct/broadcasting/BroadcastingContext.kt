@@ -5,23 +5,23 @@ import at.petrak.hexcasting.api.casting.iota.Iota
 import at.petrak.hexcasting.api.casting.math.HexPattern
 import at.petrak.hexcasting.xplat.IXplatAbstractions
 import coffee.cypher.hexbound.feature.construct.entity.AbstractConstructEntity
-import net.minecraft.util.math.BlockPos
-import net.minecraft.util.math.Box
-import net.minecraft.util.math.Vec3d
+import net.minecraft.core.BlockPos
+import net.minecraft.world.phys.AABB
+import net.minecraft.world.phys.Vec3
 
 data class BroadcastingContext(
     val broadcaster: BlockPos,
-    val center: Vec3d,
+    val center: Vec3,
     val radius: Double,
     val pattern: HexPattern?,
-    val particleCenter: Vec3d,
+    val particleCenter: Vec3,
     val particleOffset: Double
 ) {
     fun broadcast(instructions: List<Iota>, ctx: CastingEnvironment) {
         val radiusSqr = radius * radius
 
-        ctx.world.getEntitiesByClass(AbstractConstructEntity::class.java, Box(center, center).expand(radius)) {
-            it.pos.squaredDistanceTo(center) <= radiusSqr
+        ctx.world.getEntitiesOfClass(AbstractConstructEntity::class.java, AABB(center, center).inflate(radius)) {
+            it.position().distanceToSqr(center) <= radiusSqr
         }.forEach {
             it.acceptInstructions(instructions, ctx.caster, true, pattern)
         }
@@ -31,14 +31,14 @@ data class BroadcastingContext(
         val particleColorizer = IXplatAbstractions.INSTANCE.getPigment(ctx.caster)
         val particleColor = particleColorizer.colorProvider.getColor(
             random.nextFloat() * 16384,
-            Vec3d(
+            Vec3(
                 random.nextFloat().toDouble(),
                 random.nextFloat().toDouble(),
                 random.nextFloat().toDouble()
-            ).multiply((random.nextFloat() * 3).toDouble())
+            ).scale((random.nextFloat() * 3).toDouble())
         )
 
-        ConstructBroadcasterBlock.onActivated(ctx.world, broadcaster)
+        (ctx.world.getBlockState(broadcaster).block as? ConstructBroadcasterBlock)?.onActivated(ctx.world, broadcaster)
 
         BroadcasterActivatedS2CPacket(particleCenter, particleOffset, particleColor).send(ctx.world)
     }
