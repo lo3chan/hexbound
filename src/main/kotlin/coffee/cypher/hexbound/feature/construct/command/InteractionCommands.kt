@@ -32,7 +32,7 @@ import net.minecraft.world.level.block.state.BlockState
 class Harvest(
     val target: BlockPos
 ) : ConstructCommand<Harvest> {
-    override fun getType() = HexboundData.ConstructCommandTypes.HARVEST
+    override fun getType() = HexboundData.ConstructCommandTypes.HARVEST.get()
 
     override suspend fun TaskContext<out ConstructCommandContext>.execute() {
         withContext {
@@ -123,7 +123,7 @@ class UseItemOnBlock(
     val target: BlockPos,
     val side: Direction
 ) : ConstructCommand<UseItemOnBlock> {
-    override fun getType() = HexboundData.ConstructCommandTypes.USE_ON_BLOCK
+    override fun getType() = HexboundData.ConstructCommandTypes.USE_ON_BLOCK.get()
 
     override suspend fun TaskContext<out ConstructCommandContext>.execute() {
         withContext {

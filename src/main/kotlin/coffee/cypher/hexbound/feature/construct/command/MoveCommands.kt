@@ -12,7 +12,7 @@ import net.minecraft.world.phys.Vec3
 class MoveTo(
     val targetPos: Vec3
 ) : ConstructCommand<MoveTo> {
-    override fun getType() = HexboundData.ConstructCommandTypes.MOVE_TO
+    override fun getType() = HexboundData.ConstructCommandTypes.MOVE_TO.get()
 
     override suspend fun TaskContext<out ConstructCommandContext>.execute() {
         withContext {

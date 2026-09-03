@@ -6,57 +6,54 @@ import at.petrak.hexcasting.api.casting.eval.CastingEnvironment
 import at.petrak.hexcasting.api.casting.eval.MishapEnvironment
 import at.petrak.hexcasting.api.pigment.FrozenPigment
 import coffee.cypher.hexbound.feature.construct.entity.AbstractConstructEntity
-import net.minecraft.item.ItemStack
-import net.minecraft.server.network.ServerPlayerEntity
-import net.minecraft.server.world.ServerWorld
-import net.minecraft.text.Text
-import net.minecraft.util.Hand
-import net.minecraft.util.math.BlockPos
-import net.minecraft.util.math.Vec3d
+import net.minecraft.core.BlockPos
+import net.minecraft.network.chat.Component
+import net.minecraft.server.level.ServerLevel
+import net.minecraft.server.level.ServerPlayer
+import net.minecraft.world.InteractionHand
+import net.minecraft.world.entity.LivingEntity
+import net.minecraft.world.item.ItemStack
+import net.minecraft.world.phys.Vec3
 
-class ConstructCastEnv(val construct: AbstractConstructEntity) : CastingEnvironment(construct.world as ServerWorld) {
-    override fun getCaster(): ServerPlayerEntity? {
-        return null
+class ConstructCastEnv(val construct: AbstractConstructEntity) : CastingEnvironment(construct.level() as ServerLevel) {
+    override fun getCastingEntity(): LivingEntity? {
+        return construct
     }
 
     override fun getMishapEnvironment(): MishapEnvironment {
-        TODO("Not yet implemented")
+        return ConstructMishapEnv(construct, world)
     }
 
-    override fun postExecution(result: CastResult?) {
-        TODO("record mishaps")
+    override fun postExecution(result: CastResult) {
+        super.postExecution(result)
     }
 
-    override fun mishapSprayPos(): Vec3d {
-        return construct.pos
+    override fun mishapSprayPos(): Vec3 {
+        return construct.position()
     }
 
-    override fun extractMedia(cost: Long): Long {
-        TODO("check free actions or max media")
+    override fun extractMediaEnvironment(cost: Long, simulate: Boolean): Long {
+        return 0L
     }
 
-    override fun isVecInRange(vec: Vec3d?): Boolean {
-        TODO("Not yet implemented")
+    override fun isVecInRangeEnvironment(vec: Vec3): Boolean {
+        return vec.distanceToSqr(construct.position()) <= 32.0 * 32.0
     }
 
-    override fun hasEditPermissionsAt(vec: BlockPos?): Boolean {
-        return true //TODO check against a fake player?
+    override fun hasEditPermissionsAtEnvironment(pos: BlockPos): Boolean {
+        return true
     }
 
-    override fun getCastingHand(): Hand {
-        return Hand.MAIN_HAND
-    }
-
-    override fun getAlternateItem(): ItemStack {
-        TODO("Not yet implemented")
+    override fun getCastingHand(): InteractionHand {
+        return InteractionHand.MAIN_HAND
     }
 
     override fun getUsableStacks(mode: StackDiscoveryMode): MutableList<ItemStack> {
-        TODO("Not yet implemented")
+        return mutableListOf()
     }
 
-    override fun getPrimaryStacks(): List<HeldItemInfo> {
-        return emptyList()
+    override fun getPrimaryStacks(): MutableList<HeldItemInfo> {
+        return mutableListOf()
     }
 
     override fun getPigment(): FrozenPigment {
@@ -67,11 +64,10 @@ class ConstructCastEnv(val construct: AbstractConstructEntity) : CastingEnvironm
         return null
     }
 
-    override fun produceParticles(particles: ParticleSpray, colorizer: FrozenPigment) {
-        particles.sprayParticles(world, colorizer)
+    override fun produceParticles(particles: ParticleSpray, pigment: FrozenPigment) {
+        particles.sprayParticles(world, pigment)
     }
 
-    override fun printMessage(message: Text) {
-        TODO("Not yet implemented")
+    override fun printMessage(message: Component) {
     }
 }

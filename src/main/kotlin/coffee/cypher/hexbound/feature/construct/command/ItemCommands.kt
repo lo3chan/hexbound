@@ -15,7 +15,7 @@ import java.util.*
 class PickUp(
     val targetUuid: UUID
 ) : ConstructCommand<PickUp> {
-    override fun getType() = HexboundData.ConstructCommandTypes.PICK_UP
+    override fun getType() = HexboundData.ConstructCommandTypes.PICK_UP.get()
 
     override suspend fun TaskContext<out ConstructCommandContext>.execute() {
         withContext {
@@ -58,7 +58,7 @@ class PickUp(
 }
 
 class DropOff : ConstructCommand<DropOff> {
-    override fun getType() = HexboundData.ConstructCommandTypes.DROP_OFF
+    override fun getType() = HexboundData.ConstructCommandTypes.DROP_OFF.get()
 
     override suspend fun TaskContext<out ConstructCommandContext>.execute() {
         withContext {

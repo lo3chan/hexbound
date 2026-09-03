@@ -20,7 +20,7 @@ interface ConstructCommand<C : ConstructCommand<C>> {
 }
 
 class NoOpCommand : ConstructCommand<NoOpCommand> {
-    override fun getType() = HexboundData.ConstructCommandTypes.NO_OP
+    override fun getType() = HexboundData.ConstructCommandTypes.NO_OP.get()
 
     override fun display(world: ServerLevel): Component {
         return Component.translatable("hexbound.construct.command.no_op")
