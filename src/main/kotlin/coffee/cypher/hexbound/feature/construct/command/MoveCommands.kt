@@ -5,15 +5,12 @@ import coffee.cypher.hexbound.feature.construct.command.execution.ConstructComma
 import coffee.cypher.hexbound.init.HexboundData
 import coffee.cypher.hexbound.util.formatVector
 import coffee.cypher.kettle.scheduler.TaskContext
-import kotlinx.serialization.Contextual
-import kotlinx.serialization.Serializable
 import net.minecraft.network.chat.Component
 import net.minecraft.server.level.ServerLevel
 import net.minecraft.world.phys.Vec3
 
-@Serializable
 class MoveTo(
-    @Contextual val targetPos: Vec3
+    val targetPos: Vec3
 ) : ConstructCommand<MoveTo> {
     override fun getType() = HexboundData.ConstructCommandTypes.MOVE_TO
 

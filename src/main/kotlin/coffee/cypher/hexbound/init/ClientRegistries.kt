@@ -10,7 +10,7 @@ import net.neoforged.neoforge.client.event.RegisterShadersEvent
 
 fun initEntityRenderers(event: EntityRenderersEvent.RegisterRenderers) {
     event.registerEntityRenderer(HexboundData.EntityTypes.SPIDER_CONSTRUCT.get()) { ctx -> SpiderConstructRenderer(ctx) }
-    event.registerEntityRenderer(HexboundData.EntityTypes.SHIELD.get()) { ctx -> ShieldRenderer(ctx) }
+    event.registerEntityRenderer(HexboundData.EntityTypes.SHIELD.get()) { ctx -> ShieldRenderer(ctx) as net.minecraft.client.renderer.entity.EntityRenderer<coffee.cypher.hexbound.feature.combat.shield.ShieldEntity> }
 }
 
 fun initShaders(event: RegisterShadersEvent) {

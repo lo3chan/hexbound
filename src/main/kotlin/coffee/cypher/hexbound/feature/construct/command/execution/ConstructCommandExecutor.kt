@@ -19,10 +19,7 @@ class ConstructCommandExecutor(
         cancelCommand()
 
         currentTask = scheduler.task {
-            this run once {
-                yieldsAfterMs = 5.0
-            }
-
+            yieldsAfterMs = 5.0
             start = true
 
             action {

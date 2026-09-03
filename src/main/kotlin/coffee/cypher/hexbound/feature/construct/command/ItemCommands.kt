@@ -6,17 +6,14 @@ import coffee.cypher.hexbound.feature.construct.command.execution.ConstructComma
 import coffee.cypher.hexbound.feature.construct.entity.component.ItemHolderComponent
 import coffee.cypher.hexbound.init.HexboundData
 import coffee.cypher.kettle.scheduler.TaskContext
-import kotlinx.serialization.Contextual
-import kotlinx.serialization.Serializable
 import net.minecraft.network.chat.Component
 import net.minecraft.server.level.ServerLevel
 import net.minecraft.world.entity.item.ItemEntity
 import net.minecraft.world.item.ItemStack
 import java.util.*
 
-@Serializable
 class PickUp(
-    @Contextual val targetUuid: UUID
+    val targetUuid: UUID
 ) : ConstructCommand<PickUp> {
     override fun getType() = HexboundData.ConstructCommandTypes.PICK_UP
 
@@ -60,7 +57,6 @@ class PickUp(
     }
 }
 
-@Serializable
 class DropOff : ConstructCommand<DropOff> {
     override fun getType() = HexboundData.ConstructCommandTypes.DROP_OFF
 

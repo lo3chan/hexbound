@@ -8,8 +8,6 @@ import coffee.cypher.hexbound.init.HexboundData
 import coffee.cypher.hexbound.util.formatVector
 import coffee.cypher.hexbound.util.localizeSide
 import coffee.cypher.kettle.scheduler.TaskContext
-import kotlinx.serialization.Contextual
-import kotlinx.serialization.Serializable
 import net.minecraft.core.BlockPos
 import net.minecraft.core.Direction
 import net.minecraft.commands.arguments.EntityAnchorArgument
@@ -31,9 +29,8 @@ import net.minecraft.world.level.Level
 import net.minecraft.world.level.block.*
 import net.minecraft.world.level.block.state.BlockState
 
-@Serializable
 class Harvest(
-    @Contextual val target: BlockPos
+    val target: BlockPos
 ) : ConstructCommand<Harvest> {
     override fun getType() = HexboundData.ConstructCommandTypes.HARVEST
 
@@ -54,13 +51,11 @@ class Harvest(
                 is HarvestingResult.StandardHarvest -> {
                     world.setBlock(target, harvest.replantState, 3)
 
-                    val seed = state.block.getCloneItemStack(world, target, state).item
+                    val seed = state.block.asItem()
                     val dropped = Block.getDrops(state, world, target, null)
 
                     dropped.firstOrNull { it.`is`(seed) }?.let { it.count-- }
                     dropped.forEach { Block.popResource(world, target, it) }
-
-                    // state.onStacksDropped(world, target, ItemStack.EMPTY, false) // replaced by spawnDestroyParticles? Let's omit if unnecessary
 
                     world.playSound(null, target, harvest.sound, SoundSource.BLOCKS, 1f, 1f)
                 }
@@ -124,9 +119,8 @@ class Harvest(
     }
 }
 
-@Serializable
 class UseItemOnBlock(
-    @Contextual val target: BlockPos,
+    val target: BlockPos,
     val side: Direction
 ) : ConstructCommand<UseItemOnBlock> {
     override fun getType() = HexboundData.ConstructCommandTypes.USE_ON_BLOCK
