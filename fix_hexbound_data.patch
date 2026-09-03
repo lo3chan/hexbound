@@ -1,0 +1,42 @@
+--- src/main/kotlin/coffee/cypher/hexbound/init/HexboundData.kt
++++ src/main/kotlin/coffee/cypher/hexbound/init/HexboundData.kt
+@@ -2,6 +2,7 @@
+
+ import coffee.cypher.hexbound.feature.combat.shield.ShieldEntity
+ import coffee.cypher.hexbound.feature.combat.status_effects.ReducedAmbitStatusEffect
++import coffee.cypher.hexbound.feature.media_attachment.StaticMediaValue
+ import coffee.cypher.hexbound.feature.construct.broadcasting.ConstructBroadcasterBlock
+ import coffee.cypher.hexbound.feature.construct.command.*
+ import coffee.cypher.hexbound.feature.construct.entity.SpiderConstructEntity
+@@ -19,17 +20,24 @@
+ import java.util.*
+ import net.minecraft.world.item.CreativeModeTab
+ import net.minecraft.world.item.ItemStack
++import net.minecraft.core.component.DataComponentType
+
+ object HexboundData {
+     val ITEMS = DeferredRegister.create(BuiltInRegistries.ITEM, Hexbound.MOD_ID)
+     val BLOCKS = DeferredRegister.create(BuiltInRegistries.BLOCK, Hexbound.MOD_ID)
+     val ENTITY_TYPES = DeferredRegister.create(BuiltInRegistries.ENTITY_TYPE, Hexbound.MOD_ID)
+     val STATUS_EFFECTS = DeferredRegister.create(BuiltInRegistries.MOB_EFFECT, Hexbound.MOD_ID)
+     val TABS = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, Hexbound.MOD_ID)
++    val DATA_COMPONENTS = DeferredRegister.createDataComponents(BuiltInRegistries.DATA_COMPONENT_TYPE, Hexbound.MOD_ID)
+
+     val CONSTRUCT_COMMANDS_KEY = ResourceKey.createRegistryKey<ConstructCommand.Type<*>>(Hexbound.id("construct_command"))
+     val CONSTRUCT_COMMANDS = DeferredRegister.create(CONSTRUCT_COMMANDS_KEY, Hexbound.MOD_ID)
+
++    val STATIC_MEDIA_VALUE = DATA_COMPONENTS.register("static_media_value") { ->
++        DataComponentType.builder<StaticMediaValue>().persistent(StaticMediaValue.CODEC).networkSynchronized(StaticMediaValue.STREAM_CODEC).build()
++    }
++
+     fun init(bus: net.neoforged.bus.api.IEventBus) {
+         ITEMS.register(bus)
+         BLOCKS.register(bus)
+@@ -40,6 +48,7 @@
+         STATUS_EFFECTS.register(bus)
+         CONSTRUCT_COMMANDS.register(bus)
+         TABS.register(bus)
++        DATA_COMPONENTS.register(bus)
+
+         ModRegistries.init()
+         ItemGroups.init()

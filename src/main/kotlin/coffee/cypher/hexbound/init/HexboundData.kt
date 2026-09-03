@@ -24,6 +24,8 @@ import net.neoforged.neoforge.registries.DeferredRegister
 import java.util.*
 import net.minecraft.world.item.CreativeModeTab
 import net.minecraft.world.item.ItemStack
+import net.minecraft.core.component.DataComponentType
+import coffee.cypher.hexbound.feature.media_attachment.StaticMediaValue
 
 object HexboundData {
     val ITEMS = DeferredRegister.create(BuiltInRegistries.ITEM, Hexbound.MOD_ID)
@@ -31,9 +33,14 @@ object HexboundData {
     val ENTITY_TYPES = DeferredRegister.create(BuiltInRegistries.ENTITY_TYPE, Hexbound.MOD_ID)
     val STATUS_EFFECTS = DeferredRegister.create(BuiltInRegistries.MOB_EFFECT, Hexbound.MOD_ID)
     val TABS = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, Hexbound.MOD_ID)
+    val DATA_COMPONENTS = DeferredRegister.createDataComponents(BuiltInRegistries.DATA_COMPONENT_TYPE, Hexbound.MOD_ID)
 
     val CONSTRUCT_COMMANDS_KEY = ResourceKey.createRegistryKey<ConstructCommand.Type<*>>(Hexbound.id("construct_command"))
     val CONSTRUCT_COMMANDS = DeferredRegister.create(CONSTRUCT_COMMANDS_KEY, Hexbound.MOD_ID)
+
+    val STATIC_MEDIA_VALUE = DATA_COMPONENTS.register("static_media_value") { ->
+        DataComponentType.builder<StaticMediaValue>().persistent(StaticMediaValue.CODEC).networkSynchronized(StaticMediaValue.STREAM_CODEC).build()
+    }
 
     fun init(bus: net.neoforged.bus.api.IEventBus) {
         ITEMS.register(bus)
@@ -42,6 +49,7 @@ object HexboundData {
         STATUS_EFFECTS.register(bus)
         CONSTRUCT_COMMANDS.register(bus)
         TABS.register(bus)
+        DATA_COMPONENTS.register(bus)
 
         ModRegistries.init()
         ItemGroups.init()
