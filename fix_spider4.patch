@@ -1,0 +1,10 @@
+--- src/main/kotlin/coffee/cypher/hexbound/feature/construct/entity/SpiderConstructEntity.kt
++++ src/main/kotlin/coffee/cypher/hexbound/feature/construct/entity/SpiderConstructEntity.kt
+@@ -155,7 +155,7 @@
+     companion object {
+         fun createType(): EntityType<SpiderConstructEntity> {
+-            return EntityType.Builder.of(::SpiderConstructEntity, SpawnGroup.MISC)
++            return EntityType.Builder.of(EntityType.EntityFactory(::SpiderConstructEntity), MobCategory.MISC)
+                 .sized(1.25f, 0.75f)
+                 .clientTrackingRange(8)
+                 .build("spider_construct")

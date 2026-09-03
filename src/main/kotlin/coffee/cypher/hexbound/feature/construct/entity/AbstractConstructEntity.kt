@@ -19,36 +19,39 @@ import coffee.cypher.hexbound.init.Hexbound
 import coffee.cypher.hexbound.init.HexboundData
 import coffee.cypher.hexbound.util.MemorizedPlayerData
 import com.mojang.serialization.Codec
-import net.minecraft.entity.EntityType
-import net.minecraft.entity.mob.PathAwareEntity
-import net.minecraft.entity.player.PlayerEntity
-import net.minecraft.item.ItemStack
+import net.minecraft.world.entity.EntityType
+import net.minecraft.world.entity.PathfinderMob
+import net.minecraft.world.entity.player.Player
+import net.minecraft.world.item.ItemStack
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.nbt.Tag
 import net.minecraft.nbt.ListTag
 import net.minecraft.nbt.NbtOps
-import net.minecraft.server.world.ServerWorld
-import net.minecraft.text.Text
-import net.minecraft.util.*
-import net.minecraft.world.World
+import net.minecraft.server.level.ServerLevel
+import net.minecraft.network.chat.Component
+import net.minecraft.world.InteractionResult
+import net.minecraft.world.InteractionHand
+import net.minecraft.world.level.Level
+import net.minecraft.world.entity.HumanoidArm
+import net.minecraft.resources.ResourceLocation
 import kotlin.Pair
 import kotlin.jvm.optionals.getOrNull
 
 abstract class AbstractConstructEntity(
-    entityType: EntityType<out PathAwareEntity>,
-    world: World
-) : PathAwareEntity(entityType, world) {
+    entityType: EntityType<out PathfinderMob>,
+    world: Level
+) : PathfinderMob(entityType, world) {
     private val components = mutableMapOf<ConstructComponentKey<*>, Any>()
 
     @Suppress("LeakingThis")
-    protected val fakePlayer = if (world.isClient)
+    protected val fakePlayer = if (world.isClientSide)
         null
     else
-        ConstructFakePlayer(world as ServerWorld, this)
+        ConstructFakePlayer(world as ServerLevel, this)
 
     protected var command: Pair<ConstructCommand<*>, List<Iota>>? = null
     protected var castVm: CastingVM? = null
-    protected var error: Text? = null
+    protected var error: Component? = null
 
     private var instructionSet: List<Iota>? = null
     var boundPlayerData: MemorizedPlayerData? = null
@@ -67,7 +70,7 @@ abstract class AbstractConstructEntity(
         return castVm!!
     }
 
-    private fun getOrCreateExecutor(world: ServerWorld): ConstructCommandExecutor {
+    private fun getOrCreateExecutor(world: ServerLevel): ConstructCommandExecutor {
         if (!this::_executor.isInitialized) {
             _executor = ConstructCommandExecutor(this, world, this::onCommandCompleted, this::onCommandError)
         }
@@ -92,11 +95,11 @@ abstract class AbstractConstructEntity(
         setLastError(commandException.errorText)
     }
 
-    fun isPlayerAllowed(player: PlayerEntity?) = (boundPlayerData == null) || (boundPlayerData?.uuid == player?.uuid)
+    fun isPlayerAllowed(player: Player?) = (boundPlayerData == null) || (boundPlayerData?.uuid == player?.uuid)
 
     fun acceptInstructions(
         instructionSet: List<Iota>,
-        player: PlayerEntity?,
+        player: Player?,
         isBroadcasting: Boolean,
         pattern: HexPattern?
     ): Boolean {
@@ -112,14 +115,14 @@ abstract class AbstractConstructEntity(
         return true
     }
 
-    fun setLastError(error: Text) {
+    fun setLastError(error: Component) {
         this.error = error
         command = null
         castVm = null
     }
 
     private fun evaluateInstructions(instructionSet: List<Iota>) {
-        val serverWorld = world as? ServerWorld ?: return
+        val serverWorld = level() as? ServerLevel ?: return
 
         error = null
 
@@ -137,7 +140,7 @@ abstract class AbstractConstructEntity(
     fun executeCommand(
         command: ConstructCommand<*>,
         onComplete: List<Iota>,
-        world: ServerWorld
+        world: ServerLevel
     ) {
         this.command = command to onComplete
         getOrCreateExecutor(world).startCommand(command)
@@ -153,8 +156,8 @@ abstract class AbstractConstructEntity(
             evaluateInstructions(instructionSet!!)
             instructionSet = null
         }
-        if (!world.isClient) {
-            getOrCreateExecutor(world as ServerWorld).tick()
+        if (!level().isClientSide) {
+            getOrCreateExecutor(level() as ServerLevel).tick()
         }
     }
 
@@ -167,9 +170,11 @@ abstract class AbstractConstructEntity(
         return components[key] as T?
     }
 
-    override fun mobInteract(player: PlayerEntity, hand: Hand): ActionResult {
-        if (!player.isSneaking && player.getItemInHand(hand).isOf(HexItems.SCRYING_LENS)) {
-            if (!world.isClient) {
+    override fun mobInteract(player: Player, hand: InteractionHand): InteractionResult {
+        if (!player.isShiftKeyDown && player.getItemInHand(hand).`is`(HexItems.SCRYING_LENS)) {
+            if (!level().isClientSide) {
+                val text = Component.literal("STATUS (not yet fully ported)") //TODO fix text builder component
+                /*
                 val text = buildText {
                     when {
                         error != null -> color(Color(0xFFA500)) {
@@ -179,7 +184,7 @@ abstract class AbstractConstructEntity(
                         command != null -> color(Color.GREEN) {
                             translatable(
                                 "hexbound.construct.status.executing",
-                                command!!.first.display(world as ServerWorld)
+                                command!!.first.display(world as ServerLevel)
                             )
                         }
 
@@ -196,36 +201,33 @@ abstract class AbstractConstructEntity(
                         translatable("hexbound.construct.status.bound_player", it.displayName)
                     }
                 }
+                */
 
                 player.sendSystemMessage(text)
             }
 
-            return ActionResult.SUCCESS
+            return InteractionResult.SUCCESS
         }
 
         return super.mobInteract(player, hand)
     }
 
-    override fun isPersistent(): Boolean {
-        return true
-    }
-
-    override fun cannotDespawn(): Boolean {
-        return true
+    override fun removeWhenFarAway(distanceToClosestPlayer: Double): Boolean {
+        return false // equivalent to cannotDespawn() returning true
     }
 
     override fun getArmorItems(): Iterable<ItemStack> {
         return mutableListOf()
     }
 
-    override fun getMainArm(): Arm {
-        return Arm.RIGHT
+    override fun getMainArm(): HumanoidArm {
+        return HumanoidArm.RIGHT
     }
 
     override fun addAdditionalSaveData(nbt: CompoundTag) {
         super.addAdditionalSaveData(nbt)
 
-        if (world is ServerWorld) {
+        if (level() is ServerLevel) {
             command?.let {
                 nbt["command"] = encodeCommand(it)
             }
@@ -276,12 +278,12 @@ abstract class AbstractConstructEntity(
         super.readAdditionalSaveData(nbt)
 
         command = null
-        val serverWorld = world as? ServerWorld ?: return
+        val serverWorld = level() as? ServerLevel ?: return
 
         if (nbt.contains("command")) {
             //TODO maybe this can go into a command frame class (low priority)
             val commandNbt = nbt.getCompound("command")
-            val typeId = Identifier.tryParse(commandNbt.getString("type"))
+            val typeId = ResourceLocation.tryParse(commandNbt.getString("type"))
             val type = HexboundData.ModRegistries.CONSTRUCT_COMMANDS.get(typeId)
             val result = type.codec.decode(NbtOps.INSTANCE, commandNbt.get("data"))
             val onComplete = commandNbt.getList("on_complete", Tag.COMPOUND_TYPE.toInt()).map {

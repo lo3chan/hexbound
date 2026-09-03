@@ -1,0 +1,23 @@
+--- src/main/kotlin/coffee/cypher/hexbound/feature/construct/entity/SpiderConstructEntity.kt
++++ src/main/kotlin/coffee/cypher/hexbound/feature/construct/entity/SpiderConstructEntity.kt
+@@ -17,2 +17,3 @@
+ import net.minecraft.world.entity.mob.MobEntity
++import net.minecraft.world.entity.Mob
+ import net.minecraft.entity.player.PlayerEntity
+@@ -155,7 +156,12 @@
+     companion object {
+-        fun createAttributes() = MobEntity.createMobAttributes()
+-            .add(Attributes.MAX_HEALTH, 10.0)
+-            .add(Attributes.MOVEMENT_SPEED, 0.25)
+-            .add(Attributes.FOLLOW_RANGE, 32.0)
++        fun createType(): EntityType<SpiderConstructEntity> {
++            return EntityType.Builder.of(::SpiderConstructEntity, SpawnGroup.MISC)
++                .sized(1.25f, 0.75f)
++                .clientTrackingRange(8)
++                .build("spider_construct")
++        }
++
++        fun createAttributes() = Mob.createMobAttributes()
++            .add(Attributes.MAX_HEALTH, 10.0)
++            .add(Attributes.MOVEMENT_SPEED, 0.25)
++            .add(Attributes.FOLLOW_RANGE, 32.0)

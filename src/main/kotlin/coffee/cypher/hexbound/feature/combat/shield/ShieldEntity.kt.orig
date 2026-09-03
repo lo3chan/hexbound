@@ -21,6 +21,7 @@ import net.minecraft.world.World
 import org.quiltmc.qkl.library.math.minus
 import org.quiltmc.qkl.library.math.plus
 import org.quiltmc.qkl.library.math.unaryMinus
+import org.quiltmc.qsl.entity.api.QuiltEntityTypeBuilder
 import java.util.function.BiFunction
 import kotlin.math.abs
 
@@ -156,13 +157,15 @@ class ShieldEntity(
             DataTracker.registerData(ShieldEntity::class.java, TrackedDataHandlerRegistry.INTEGER)
 
         fun createType(): EntityType<ShieldEntity> {
-            return EntityType.Builder.of({ type, world -> ShieldEntity(type, world, null, 200, VisualType.REGULAR) }, SpawnGroup.MISC)
-                .fireImmune()
-                .noSave()
-                .noSummon()
-                .sized(3f, 2.625f)
-                .clientTrackingRange(10)
-                .build("shield")
+            return QuiltEntityTypeBuilder
+                .create<ShieldEntity>()
+                .spawnGroup(SpawnGroup.MISC)
+                .entityFactory { type, world -> ShieldEntity(type, world, null, 200, VisualType.REGULAR) }
+                .makeFireImmune()
+                .disableSaving()
+                .disableSummon()
+                .setDimensions(EntityDimensions.fixed(3f, 2.625f))
+                .build()
         }
 
         @JvmStatic

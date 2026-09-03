@@ -1,0 +1,20 @@
+--- src/main/kotlin/coffee/cypher/hexbound/feature/construct/entity/SpiderConstructEntity.kt
++++ src/main/kotlin/coffee/cypher/hexbound/feature/construct/entity/SpiderConstructEntity.kt
+@@ -141,7 +141,7 @@
+     override fun addAdditionalSaveData(nbt: CompoundTag) {
+         super.addAdditionalSaveData(nbt)
+
+-        val registryAccess = level().registryAccess()
++        val registryAccess = this.level().registryAccess()
+         nbt.put("held_stack", heldStack.save(registryAccess))
+         nbt.putBoolean("alt_model", isAltModelEnabled)
+     }
+@@ -149,7 +149,7 @@
+     override fun readAdditionalSaveData(nbt: CompoundTag) {
+         super.readAdditionalSaveData(nbt)
+
+-        val registryAccess = level().registryAccess()
++        val registryAccess = this.level().registryAccess()
+         heldStack = ItemStack.parseOptional(registryAccess, nbt.getCompound("held_stack"))
+         isAltModelEnabled = nbt.getBoolean("alt_model")
+     }

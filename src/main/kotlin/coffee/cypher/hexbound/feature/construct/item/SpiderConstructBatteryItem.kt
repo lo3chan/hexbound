@@ -16,7 +16,7 @@ import net.minecraft.world.item.component.CustomData
 
 class SpiderConstructBatteryItem(properties: Properties) : Item(properties.stacksTo(1)), MediaHolderItem {
     val maxCharge: Long
-        get() = (HexboundConfig.spiderBatteryChargeRequired * MediaConstants.DUST_UNIT).toLong()
+        get() = (100 * MediaConstants.DUST_UNIT).toLong()
 
     var ItemStack.charge: Long
         get() {
@@ -79,7 +79,7 @@ class SpiderConstructBatteryItem(properties: Properties) : Item(properties.stack
             val percentage = ((stack.charge.toDouble() / maxCharge) * 100).toInt()
 
             val currentText = Component.literal((stack.charge / MediaConstants.DUST_UNIT).toString()).withColor(hexColor)
-            val maxText = Component.literal(HexboundConfig.spiderBatteryChargeRequired.toString()).withColor(hexColor)
+            val maxText = Component.literal("100").withColor(hexColor)
 
             tooltip.add(Component.translatable("item.hexbound.spider_construct_battery.charge", percentage, currentText, maxText))
         }

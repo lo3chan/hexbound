@@ -1,0 +1,31 @@
+--- src/main/kotlin/coffee/cypher/hexbound/feature/construct/entity/SpiderConstructEntity.kt
++++ src/main/kotlin/coffee/cypher/hexbound/feature/construct/entity/SpiderConstructEntity.kt
+@@ -11,8 +11,7 @@
+ import net.minecraft.entity.SpawnGroup
+ import net.minecraft.entity.attribute.EntityAttributes
+-import net.minecraft.entity.data.DataTracker
+-import net.minecraft.entity.data.TrackedData
+-import net.minecraft.entity.data.TrackedDataHandlerRegistry
++import net.minecraft.network.syncher.EntityDataAccessor
++import net.minecraft.network.syncher.EntityDataSerializers
++import net.minecraft.network.syncher.SynchedEntityData
+ import net.minecraft.entity.mob.MobEntity
+ import net.minecraft.entity.player.PlayerEntity
+@@ -172,13 +171,13 @@
+         private val DANCE_ANIMATION = RawAnimation.begin().thenLoop("dance")
+
+-        val ALT_MODEL_ENABLED: TrackedData<Boolean> = DataTracker.registerData(
++        val ALT_MODEL_ENABLED: EntityDataAccessor<Boolean> = SynchedEntityData.defineId(
+             SpiderConstructEntity::class.java,
+-            TrackedDataHandlerRegistry.BOOLEAN
++            EntityDataSerializers.BOOLEAN
+         )
+
+-        val HELD_STACK: TrackedData<ItemStack> = DataTracker.registerData(
++        val HELD_STACK: EntityDataAccessor<ItemStack> = SynchedEntityData.defineId(
+             SpiderConstructEntity::class.java,
+-            TrackedDataHandlerRegistry.ITEM_STACK
++            EntityDataSerializers.ITEM_STACK
+         )
+     }
+ }

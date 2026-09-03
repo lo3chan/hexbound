@@ -1,0 +1,25 @@
+--- src/main/kotlin/coffee/cypher/hexbound/feature/construct/entity/SpiderConstructEntity.kt
++++ src/main/kotlin/coffee/cypher/hexbound/feature/construct/entity/SpiderConstructEntity.kt
+@@ -28,3 +28,2 @@
+ import org.quiltmc.qkl.library.nbt.set
+-import org.quiltmc.qsl.entity.api.QuiltEntityTypeBuilder
+ import software.bernie.geckolib.animatable.GeoEntity
+--- src/main/kotlin/coffee/cypher/hexbound/feature/combat/shield/ShieldEntity.kt
++++ src/main/kotlin/coffee/cypher/hexbound/feature/combat/shield/ShieldEntity.kt
+@@ -23,3 +23,2 @@
+ import org.quiltmc.qkl.library.math.times
+-import org.quiltmc.qsl.entity.api.QuiltEntityTypeBuilder
+ import software.bernie.geckolib.animatable.GeoEntity
+@@ -159,8 +158,6 @@
+         fun createType(): EntityType<ShieldEntity> {
+-            return QuiltEntityTypeBuilder
+-                .create<ShieldEntity>()
+-                .spawnGroup(SpawnGroup.MISC)
+-                .entityFactory(::ShieldEntity)
+-                .setDimensions(EntityDimensions.fixed(1.25f, 1.25f))
+-                .build()
++            return EntityType.Builder.of(::ShieldEntity, SpawnGroup.MISC)
++                .sized(1.25f, 1.25f)
++                .clientTrackingRange(10)
++                .build("shield")
+         }

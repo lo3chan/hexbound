@@ -1,0 +1,13 @@
+--- src/main/kotlin/coffee/cypher/hexbound/feature/construct/entity/SpiderConstructEntity.kt
++++ src/main/kotlin/coffee/cypher/hexbound/feature/construct/entity/SpiderConstructEntity.kt
+@@ -131,8 +131,8 @@
+         return redirectSpiderLang(super.getDefaultName(), this)
+     }
+
+-    override fun registerControllers(registar: AnimatableManager.ControllerRegistrar) {
+-        registar.add(animationController)
++    override fun registerControllers(controllers: AnimatableManager.ControllerRegistrar) {
++        controllers.add(animationController)
+     }
+
+     override fun getAnimatableInstanceCache(): AnimatableInstanceCache {

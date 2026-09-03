@@ -1,0 +1,16 @@
+--- src/main/kotlin/coffee/cypher/hexbound/feature/construct/entity/SpiderConstructEntity.kt
++++ src/main/kotlin/coffee/cypher/hexbound/feature/construct/entity/SpiderConstructEntity.kt
+@@ -165,11 +165,11 @@
+         private val DANCE_ANIMATION = RawAnimation.begin().thenLoop("dance")
+
+         val ALT_MODEL_ENABLED: EntityDataAccessor<Boolean> = SynchedEntityData.defineId(
+-            SpiderConstructEntity::class.java,
++            SpiderConstructEntity::class.java as Class<out net.minecraft.network.syncher.SyncedDataHolder>,
+             EntityDataSerializers.BOOLEAN
+         )
+
+         val HELD_STACK: EntityDataAccessor<ItemStack> = SynchedEntityData.defineId(
+-            SpiderConstructEntity::class.java,
++            SpiderConstructEntity::class.java as Class<out net.minecraft.network.syncher.SyncedDataHolder>,
+             EntityDataSerializers.ITEM_STACK
+         )

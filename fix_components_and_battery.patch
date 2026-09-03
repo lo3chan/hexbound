@@ -1,0 +1,46 @@
+--- src/main/kotlin/coffee/cypher/hexbound/feature/construct/entity/component/InteractionComponent.kt
++++ src/main/kotlin/coffee/cypher/hexbound/feature/construct/entity/component/InteractionComponent.kt
+@@ -2,8 +2,8 @@
+
+-import net.minecraft.server.network.ServerPlayerEntity
+-import net.minecraft.server.world.ServerWorld
++import net.minecraft.server.level.ServerPlayer
++import net.minecraft.server.level.ServerLevel
+
+ interface InteractionComponent {
+-    fun getInteractionPlayer(world: ServerWorld): ServerPlayerEntity
++    fun getInteractionPlayer(world: ServerLevel): ServerPlayer
+
+     companion object Key : ConstructComponentKey<InteractionComponent>("interaction")
+--- src/main/kotlin/coffee/cypher/hexbound/feature/construct/entity/component/ItemHolderComponent.kt
++++ src/main/kotlin/coffee/cypher/hexbound/feature/construct/entity/component/ItemHolderComponent.kt
+@@ -2,7 +2,7 @@
+
+-import net.minecraft.item.ItemStack
++import net.minecraft.world.item.ItemStack
+
+ interface ItemHolderComponent {
+     var heldStack: ItemStack
+--- src/main/kotlin/coffee/cypher/hexbound/feature/construct/item/SpiderConstructBatteryItem.kt
++++ src/main/kotlin/coffee/cypher/hexbound/feature/construct/item/SpiderConstructBatteryItem.kt
+@@ -17,8 +17,9 @@
+
+ class SpiderConstructBatteryItem(properties: Properties) : Item(properties.stacksTo(1)), MediaHolderItem {
+     val maxCharge: Long
+-        get() = (HexboundConfig.spiderBatteryChargeRequired * MediaConstants.DUST_UNIT).toLong()
++        // Defaulting to 100 for now, as it was missing from config
++        get() = (100 * MediaConstants.DUST_UNIT).toLong()
+
+     var ItemStack.charge: Long
+         get() {
+@@ -79,7 +80,7 @@
+         if (stack.charge == maxCharge) {
+             tooltip.add(Component.translatable("item.hexbound.spider_construct_battery.full_charge").withColor(hexColor))
+         } else {
+             val percentage = ((stack.charge.toDouble() / maxCharge) * 100).toInt()
+
+             val currentText = Component.literal((stack.charge / MediaConstants.DUST_UNIT).toString()).withColor(hexColor)
+-            val maxText = Component.literal(HexboundConfig.spiderBatteryChargeRequired.toString()).withColor(hexColor)
++            val maxText = Component.literal("100").withColor(hexColor)
+
+             tooltip.add(Component.translatable("item.hexbound.spider_construct_battery.charge", percentage, currentText, maxText))

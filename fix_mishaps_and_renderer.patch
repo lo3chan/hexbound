@@ -1,0 +1,109 @@
+--- src/main/kotlin/coffee/cypher/hexbound/feature/construct/mishap/MishapConstructForbidden.kt
++++ src/main/kotlin/coffee/cypher/hexbound/feature/construct/mishap/MishapConstructForbidden.kt
+@@ -7,9 +7,9 @@
+ import coffee.cypher.hexbound.feature.construct.entity.AbstractConstructEntity
+-import net.minecraft.text.Text
+-import net.minecraft.util.DyeColor
+-import org.quiltmc.qkl.library.math.minus
++import net.minecraft.network.chat.Component
++import net.minecraft.world.item.DyeColor
+
+ class MishapConstructForbidden(val construct: AbstractConstructEntity) : Mishap() {
+     override fun accentColor(ctx: CastingEnvironment, errorCtx: Context): FrozenPigment {
+         return dyeColor(DyeColor.BROWN)
+     }
+
+-    override fun errorMessage(ctx: CastingEnvironment, errorCtx: Context): Text {
++    override fun errorMessage(ctx: CastingEnvironment, errorCtx: Context): Component {
+         return error("construct_forbidden", construct.displayName, construct.boundPlayerData?.displayName ?: "")
+     }
+
+     override fun execute(ctx: CastingEnvironment, errorCtx: Context, stack: MutableList<Iota>) {
+         val caster = ctx.caster ?: return
+
+-        val directionVec = caster.pos - construct.pos
++        val directionVec = caster.position().subtract(construct.position())
+         val movementVec = directionVec.normalize()
+-        caster.addVelocity(movementVec.x, movementVec.y, movementVec.z)
+-        caster.velocityModified = true
++        caster.addDeltaMovement(movementVec)
++        caster.hasImpulse = true
+     }
+ }
+--- src/main/kotlin/coffee/cypher/hexbound/feature/construct/mishap/MishapMissingConstructComponent.kt
++++ src/main/kotlin/coffee/cypher/hexbound/feature/construct/mishap/MishapMissingConstructComponent.kt
+@@ -8,11 +8,11 @@
+ import coffee.cypher.hexbound.feature.construct.entity.component.ConstructComponentKey
+-import net.minecraft.text.Text
+-import net.minecraft.util.DyeColor
++import net.minecraft.network.chat.Component
++import net.minecraft.world.item.DyeColor
+
+ class MishapMissingConstructComponent(
+     val construct: AbstractConstructEntity,
+     val key: ConstructComponentKey<*>
+ ) : Mishap() {
+     override fun accentColor(ctx: CastingEnvironment, errorCtx: Context): FrozenPigment {
+         return dyeColor(DyeColor.YELLOW)
+     }
+
+-    override fun errorMessage(ctx: CastingEnvironment, errorCtx: Context): Text {
+-        return Text.translatable("hexbound.construct.exception.component_missing.${key.key}", construct.displayName)
++    override fun errorMessage(ctx: CastingEnvironment, errorCtx: Context): Component {
++        return Component.translatable("hexbound.construct.exception.component_missing.${key.key}", construct.displayName)
+     }
+
+     override fun execute(ctx: CastingEnvironment, errorCtx: Context, stack: MutableList<Iota>) {
+     }
+ }
+--- src/main/kotlin/coffee/cypher/hexbound/feature/construct/rendering/SpiderConstructRenderer.kt
++++ src/main/kotlin/coffee/cypher/hexbound/feature/construct/rendering/SpiderConstructRenderer.kt
+@@ -19,10 +19,10 @@
+ import software.bernie.geckolib.renderer.layer.BlockAndItemGeoLayer
+ import software.bernie.geckolib.renderer.layer.GeoRenderLayer
+
+ class SpiderConstructRenderer(
+     renderManager: EntityRendererProvider.Context
+ ) : GeoEntityRenderer<SpiderConstructEntity>(
+     renderManager,
+     SpiderConstructModel()
+ ) {
+     init {
+         addRenderLayer(SpiderConstructTranslucentLayer(this))
+@@ -70,9 +70,9 @@
+ class SpiderConstructItemLayer(
+     renderer: GeoRenderer<SpiderConstructEntity>
+ ) : BlockAndItemGeoLayer<SpiderConstructEntity>(renderer) {
+     override fun getStackForBone(bone: GeoBone, animatable: SpiderConstructEntity): ItemStack? {
+-        if ("item" in bone.name && !animatable.heldStack.isEmpty) {
++        if ("item" in bone.name && !animatable.heldStack.isEmpty) {
+             return animatable.heldStack
+         }
+
+@@ -109,9 +109,9 @@
+ class SpiderConstructTranslucentLayer(
+     renderer: GeoRenderer<SpiderConstructEntity>
+ ) : GeoRenderLayer<SpiderConstructEntity>(renderer) {
+
+-    override fun render(
++    override fun renderForBone(
+         poseStack: PoseStack,
+         animatable: SpiderConstructEntity,
+-        bakedModel: BakedGeoModel,
++        bone: GeoBone,
+         renderType: RenderType,
+         bufferSource: MultiBufferSource,
+         buffer: VertexConsumer,
+@@ -124,11 +124,7 @@
+
+         val layer = RenderType.entityTranslucentCull(layerTexture)
+         val builder = bufferSource.getBuffer(layer)
+
+-        poseStack.pushPose()
+-        renderer.preRender(poseStack, animatable, bakedModel, bufferSource, builder, false, partialTick, packedLight, packedOverlay, packedOverlay)
+-        renderer.actuallyRender(poseStack, animatable, bakedModel, layer, bufferSource, builder, false, partialTick, packedLight, packedOverlay, packedOverlay)
+-        renderer.postRender(poseStack, animatable, bakedModel, bufferSource, builder, false, partialTick, packedLight, packedOverlay, packedOverlay)
+-        poseStack.popPose()
++        renderer.renderRecursively(poseStack, animatable, bone, layer, bufferSource, builder, false, partialTick, packedLight, packedOverlay, packedOverlay)
+     }
+ }

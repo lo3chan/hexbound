@@ -1,0 +1,13 @@
+--- src/main/kotlin/coffee/cypher/hexbound/feature/construct/entity/SpiderConstructEntity.kt
++++ src/main/kotlin/coffee/cypher/hexbound/feature/construct/entity/SpiderConstructEntity.kt
+@@ -127,8 +127,8 @@
+         return dist != null && dist <= 36 && command == null
+     }
+
+-    override fun getDefaultName(): Text {
+-        return redirectSpiderLang(super.getDefaultName(), this)
++    override fun getDefaultName(): Component {
++        return redirectSpiderLang(super.getDefaultName(), this) as Component
+     }
+
+     override fun registerControllers(data: software.bernie.geckolib.animation.AnimatableManager.ControllerRegistrar) {

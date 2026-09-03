@@ -155,7 +155,7 @@ class SpiderConstructEntity(
 
     companion object {
         fun createType(): EntityType<SpiderConstructEntity> {
-            return EntityType.Builder.of(EntityType.EntityFactory { type, level -> SpiderConstructEntity(type, level) }, MobCategory.MISC)
+            return EntityType.Builder.of(EntityType.EntityFactory(::SpiderConstructEntity), MobCategory.MISC)
                 .sized(1.25f, 0.75f)
                 .clientTrackingRange(8)
                 .build("spider_construct")
