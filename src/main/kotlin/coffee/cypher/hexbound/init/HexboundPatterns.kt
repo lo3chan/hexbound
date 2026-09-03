@@ -23,8 +23,14 @@ import coffee.cypher.hexbound.feature.pattern_editing.action.*
 import net.minecraft.world.entity.Entity
 import net.minecraft.world.InteractionHand
 
+import at.petrak.hexcasting.common.lib.HexRegistries
+import net.neoforged.neoforge.registries.RegisterEvent
+import net.minecraft.resources.ResourceLocation
+
 open class HexboundPatterns {
     companion object Default : HexboundPatterns()
+
+    val ACTIONS = mutableMapOf<ResourceLocation, ActionRegistryEntry>()
 
     protected open fun registerPattern(
         pattern: HexPattern,
@@ -32,16 +38,23 @@ open class HexboundPatterns {
         action: Action,
         perWorld: Boolean = false
     ) {
-        // We will just register directly to HexboundData for now
-        // ActionRegistryEntry(pattern, action) withId Hexbound.id(id) toRegistry HexActions.REGISTRY
+        ACTIONS[Hexbound.id(id)] = ActionRegistryEntry(pattern, action)
+    }
+
+    fun onRegister(event: RegisterEvent) {
+        if (event.registryKey == HexRegistries.ACTION) {
+            register()
+            for ((id, entry) in ACTIONS) {
+                event.register(HexRegistries.ACTION, id) { entry }
+            }
+        }
     }
 
     fun register() {
+        if (ACTIONS.isNotEmpty()) return
         registerPatternManipulation()
         registerMemorizedColorizers()
-
         registerCombatPatterns()
-
         registerConstructPatterns()
     }
 

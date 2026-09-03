@@ -28,6 +28,7 @@ class HexboundForge(modBus: IEventBus) {
         modBus.addListener(Hexbound::onInitialize)
         modBus.addListener(Hexbound::registerPayloads)
         modBus.addListener(Hexbound::registerEntityAttributes)
+        modBus.addListener(HexboundPatterns::onRegister)
         HexboundData.init(modBus)
 
         // Uncomment once InteropManager is fully migrated
