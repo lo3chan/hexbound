@@ -23,16 +23,14 @@ import net.minecraft.entity.EntityType
 import net.minecraft.entity.mob.PathAwareEntity
 import net.minecraft.entity.player.PlayerEntity
 import net.minecraft.item.ItemStack
-import net.minecraft.nbt.NbtCompound
-import net.minecraft.nbt.NbtElement
-import net.minecraft.nbt.NbtList
+import net.minecraft.nbt.CompoundTag
+import net.minecraft.nbt.Tag
+import net.minecraft.nbt.ListTag
 import net.minecraft.nbt.NbtOps
 import net.minecraft.server.world.ServerWorld
 import net.minecraft.text.Text
 import net.minecraft.util.*
 import net.minecraft.world.World
-import org.quiltmc.qkl.library.nbt.set
-import org.quiltmc.qkl.library.text.*
 import kotlin.Pair
 import kotlin.jvm.optionals.getOrNull
 
@@ -169,8 +167,8 @@ abstract class AbstractConstructEntity(
         return components[key] as T?
     }
 
-    override fun interactMob(player: PlayerEntity, hand: Hand): ActionResult {
-        if (!player.isSneaking && player.getStackInHand(hand).isOf(HexItems.SCRYING_LENS)) {
+    override fun mobInteract(player: PlayerEntity, hand: Hand): ActionResult {
+        if (!player.isSneaking && player.getItemInHand(hand).isOf(HexItems.SCRYING_LENS)) {
             if (!world.isClient) {
                 val text = buildText {
                     when {
@@ -205,7 +203,7 @@ abstract class AbstractConstructEntity(
             return ActionResult.SUCCESS
         }
 
-        return super.interactMob(player, hand)
+        return super.mobInteract(player, hand)
     }
 
     override fun isPersistent(): Boolean {
@@ -224,8 +222,8 @@ abstract class AbstractConstructEntity(
         return Arm.RIGHT
     }
 
-    override fun writeCustomDataToNbt(nbt: NbtCompound) {
-        super.writeCustomDataToNbt(nbt)
+    override fun addAdditionalSaveData(nbt: CompoundTag) {
+        super.addAdditionalSaveData(nbt)
 
         if (world is ServerWorld) {
             command?.let {
@@ -246,14 +244,14 @@ abstract class AbstractConstructEntity(
         }
     }
 
-    private fun <C : ConstructCommand<*>> encodeCommand(commandPair: Pair<C, List<Iota>>): NbtCompound {
+    private fun <C : ConstructCommand<*>> encodeCommand(commandPair: Pair<C, List<Iota>>): CompoundTag {
         val (command, callback) = commandPair
-        val compound = NbtCompound()
+        val compound = CompoundTag()
 
         val type = HexboundData.ModRegistries.CONSTRUCT_COMMANDS.getId(command.getType())
         compound["type"] = type.toString()
 
-        val callbackList = NbtList()
+        val callbackList = ListTag()
 
         callback.forEach {
             callbackList.add(IotaType.serialize(it))
@@ -263,7 +261,7 @@ abstract class AbstractConstructEntity(
 
         if (HexboundData.ModRegistries.CONSTRUCT_COMMANDS.get(type) != command.getType()) {
             Hexbound.LOGGER.warn("Construct command type for $command was not registered")
-            compound["data"] = NbtCompound()
+            compound["data"] = CompoundTag()
             return compound
         }
 
@@ -274,8 +272,8 @@ abstract class AbstractConstructEntity(
         return compound
     }
 
-    override fun readCustomDataFromNbt(nbt: NbtCompound) {
-        super.readCustomDataFromNbt(nbt)
+    override fun readAdditionalSaveData(nbt: CompoundTag) {
+        super.readAdditionalSaveData(nbt)
 
         command = null
         val serverWorld = world as? ServerWorld ?: return
@@ -286,8 +284,8 @@ abstract class AbstractConstructEntity(
             val typeId = Identifier.tryParse(commandNbt.getString("type"))
             val type = HexboundData.ModRegistries.CONSTRUCT_COMMANDS.get(typeId)
             val result = type.codec.decode(NbtOps.INSTANCE, commandNbt.get("data"))
-            val onComplete = commandNbt.getList("on_complete", NbtElement.COMPOUND_TYPE.toInt()).map {
-                IotaType.deserialize(it.downcast(NbtCompound.TYPE), serverWorld)
+            val onComplete = commandNbt.getList("on_complete", Tag.COMPOUND_TYPE.toInt()).map {
+                IotaType.deserialize(it.downcast(CompoundTag.TYPE), serverWorld)
             }
 
             val newCommand = result.result().getOrNull()?.first
