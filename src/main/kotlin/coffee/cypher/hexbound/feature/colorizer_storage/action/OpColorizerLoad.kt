@@ -6,7 +6,7 @@ import at.petrak.hexcasting.api.casting.eval.CastingEnvironment
 import at.petrak.hexcasting.api.casting.getPattern
 import at.petrak.hexcasting.api.casting.iota.Iota
 import at.petrak.hexcasting.api.casting.math.HexPattern
-import at.petrak.hexcasting.fabric.cc.HexCardinalComponents
+import at.petrak.hexcasting.xplat.IXplatAbstractions
 import coffee.cypher.hexbound.feature.colorizer_storage.mishap.MishapMissingColorizerKey
 import coffee.cypher.hexbound.init.memorizedColorizers
 import coffee.cypher.hexbound.util.nonBlankSignature
@@ -36,8 +36,10 @@ object OpColorizerLoad : SpellAction {
 
     private data class Spell(val key: HexPattern, val caster: ServerPlayer) : RenderedSpell {
         override fun cast(ctx: CastingEnvironment) {
-            HexCardinalComponents.FAVORED_PIGMENT[caster].pigment =
+            IXplatAbstractions.INSTANCE.setPigment(
+                caster,
                 caster.memorizedColorizers.getValue(key.nonBlankSignature)
+            )
         }
     }
 }

@@ -7,7 +7,7 @@ import at.petrak.hexcasting.api.casting.getPattern
 import at.petrak.hexcasting.api.casting.iota.Iota
 import at.petrak.hexcasting.api.casting.math.HexPattern
 import at.petrak.hexcasting.api.pigment.FrozenPigment
-import at.petrak.hexcasting.fabric.cc.HexCardinalComponents
+import at.petrak.hexcasting.xplat.IXplatAbstractions
 import coffee.cypher.hexbound.feature.colorizer_storage.mishap.MishapColorizerNotSet
 import coffee.cypher.hexbound.feature.colorizer_storage.mishap.MishapTooManyColorizers
 import coffee.cypher.hexbound.init.memorizedColorizers
@@ -25,7 +25,7 @@ object OpColorizerSave : SpellAction {
         val pattern = args.getPattern(0, 1)
         val caster = ctx.requireCaster()
 
-        val currentColorizer = HexCardinalComponents.FAVORED_PIGMENT[caster].pigment
+        val currentColorizer = IXplatAbstractions.INSTANCE.getPigment(caster)
 
         if (caster.memorizedColorizers.size >= 64 && pattern.nonBlankSignature !in caster.memorizedColorizers) {
             throw MishapTooManyColorizers()

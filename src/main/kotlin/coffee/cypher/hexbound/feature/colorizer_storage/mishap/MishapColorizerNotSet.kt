@@ -4,15 +4,15 @@ import at.petrak.hexcasting.api.casting.eval.CastingEnvironment
 import at.petrak.hexcasting.api.casting.iota.Iota
 import at.petrak.hexcasting.api.casting.mishaps.Mishap
 import at.petrak.hexcasting.api.pigment.FrozenPigment
-import net.minecraft.text.Text
-import net.minecraft.util.DyeColor
+import net.minecraft.network.chat.Component
+import net.minecraft.world.item.DyeColor
 
 class MishapColorizerNotSet : Mishap() {
     override fun accentColor(ctx: CastingEnvironment, errorCtx: Context): FrozenPigment {
         return dyeColor(DyeColor.WHITE)
     }
 
-    override fun errorMessage(ctx: CastingEnvironment, errorCtx: Context): Text {
+    override fun errorMessage(ctx: CastingEnvironment, errorCtx: Context): Component {
         return error("colorizer.absent")
     }
 

@@ -57,8 +57,6 @@ class ShieldEntity(
         visualType = initialVisualType
     }
 
-    override fun shouldSave(): Boolean = false
-
     override fun isPickable(): Boolean = true
 
     override fun defineSynchedData(builder: SynchedEntityData.Builder) {
