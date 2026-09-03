@@ -9,11 +9,9 @@ import at.petrak.hexcasting.api.casting.getVec3
 import at.petrak.hexcasting.api.casting.iota.Iota
 import at.petrak.hexcasting.api.misc.MediaConstants
 import coffee.cypher.hexbound.init.HexboundData
-import net.minecraft.command.argument.EntityAnchorArgumentType
-import net.minecraft.entity.Entity
-import net.minecraft.util.math.Vec3d
-import org.quiltmc.qkl.library.math.minus
-import org.quiltmc.qkl.library.math.plus
+import net.minecraft.commands.arguments.EntityAnchorArgument
+import net.minecraft.world.entity.Entity
+import net.minecraft.world.phys.Vec3
 import java.util.*
 import kotlin.collections.ArrayDeque
 import kotlin.math.min
@@ -31,9 +29,9 @@ class OpCreateShield(val visualType: ShieldEntity.VisualType) : SpellAction {
             val cappedDuration = min(durationTicks, 60)
             val cappedDurationSeconds = min(durationSeconds, 3.0)
 
-            cappedDuration to (cappedDurationSeconds * MediaConstants.DUST_UNIT * 4).toInt()
+            cappedDuration to (cappedDurationSeconds * MediaConstants.DUST_UNIT * 4).toLong()
         } else {
-            durationTicks to (durationSeconds * MediaConstants.DUST_UNIT * 2).toInt()
+            durationTicks to (durationSeconds * MediaConstants.DUST_UNIT * 2).toLong()
         }
 
         return SpellAction.Result(
@@ -44,14 +42,14 @@ class OpCreateShield(val visualType: ShieldEntity.VisualType) : SpellAction {
     }
 
     private class Spell(
-        val position: Vec3d,
-        val direction: Vec3d,
+        val position: Vec3,
+        val direction: Vec3,
         val visualType: ShieldEntity.VisualType,
         val maxAge: Int
     ) : RenderedSpell {
         override fun cast(ctx: CastingEnvironment) {
             val shield = ShieldEntity(
-                HexboundData.EntityTypes.SHIELD,
+                HexboundData.EntityTypes.SHIELD.get(),
                 ctx.world,
                 ctx.caster,
                 maxAge,
@@ -69,10 +67,10 @@ class OpCreateShield(val visualType: ShieldEntity.VisualType) : SpellAction {
                 shields.addLast(shield)
             }
 
-            val basePos = position - Vec3d(0.0, 1.3125, 0.0)
-            shield.setPosition(basePos)
-            shield.lookAt(EntityAnchorArgumentType.EntityAnchor.FEET, basePos + direction)
-            ctx.world.spawnEntity(shield)
+            val basePos = position.subtract(Vec3(0.0, 1.3125, 0.0))
+            shield.setPos(basePos.x, basePos.y, basePos.z)
+            shield.lookAt(EntityAnchorArgument.Anchor.FEET, basePos.add(direction))
+            ctx.world.addFreshEntity(shield)
             shield.lockPosition()
         }
     }

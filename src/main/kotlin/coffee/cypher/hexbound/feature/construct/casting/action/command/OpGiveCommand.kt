@@ -30,11 +30,13 @@ abstract class OpGiveCommand : ConstMediaAction {
             construct
         )
 
-        return construct.executeCommand(
+        construct.executeCommand(
             command,
             callback,
             env.world
         )
+
+        return emptyList()
     }
 
     abstract fun getCommand(

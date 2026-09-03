@@ -45,8 +45,8 @@ class ShieldRenderer(ctx: EntityRendererProvider.Context) : EntityRenderer<Shiel
         poseStack.mulPose(Axis.YP.rotationDegrees(180f - entity.yRot))
         poseStack.mulPose(Axis.XP.rotationDegrees(-entity.xRot))
 
-        if (entity.age < ShieldEntity.DEPLOY_TIME) {
-            val deployProgress = (entity.age + tickDelta) / ShieldEntity.DEPLOY_TIME
+        if (entity.tickCount < ShieldEntity.DEPLOY_TIME) {
+            val deployProgress = (entity.tickCount + tickDelta) / ShieldEntity.DEPLOY_TIME
             poseStack.scale(deployProgress, deployProgress, deployProgress)
         }
 
