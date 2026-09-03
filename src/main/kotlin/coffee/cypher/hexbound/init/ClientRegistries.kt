@@ -14,19 +14,27 @@ fun initEntityRenderers(event: EntityRenderersEvent.RegisterRenderers) {
 }
 
 fun initShaders(event: RegisterShadersEvent) {
-    event.registerShader(
-        ShaderInstance(
-            event.resourceProvider,
-            Hexbound.id("rendertype_construct"),
-            DefaultVertexFormat.POSITION_COLOR_TEX_LIGHTMAP
-        )
-    ) { ShieldRenderLayer.REGULAR_SHADER = it }
+    try {
+        event.registerShader(
+            ShaderInstance(
+                event.resourceProvider,
+                "hexbound__shield",
+                DefaultVertexFormat.NEW_ENTITY
+            )
+        ) { ShieldRenderLayer.REGULAR_SHADER = it }
+    } catch (e: Exception) {
+        Hexbound.LOGGER.error("Failed to register hexbound__shield shader", e)
+    }
 
-    event.registerShader(
-        ShaderInstance(
-            event.resourceProvider,
-            Hexbound.id("rendertype_construct_glitchy"),
-            DefaultVertexFormat.POSITION_COLOR_TEX_LIGHTMAP
-        )
-    ) { ShieldRenderLayer.GLITCHY_SHADER = it }
+    try {
+        event.registerShader(
+            ShaderInstance(
+                event.resourceProvider,
+                "hexbound__shield_glitchy",
+                DefaultVertexFormat.NEW_ENTITY
+            )
+        ) { ShieldRenderLayer.GLITCHY_SHADER = it }
+    } catch (e: Exception) {
+        Hexbound.LOGGER.error("Failed to register hexbound__shield_glitchy shader", e)
+    }
 }
