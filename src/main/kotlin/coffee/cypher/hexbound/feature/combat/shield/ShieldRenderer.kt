@@ -101,10 +101,17 @@ class ShieldRenderer(ctx: EntityRendererProvider.Context) : EntityRenderer<Shiel
                 val upperLeftColor = colorizer.getColor(colorTime, entity.position().add(lowerXVec).add(upperYVec))
                 val upperRightColor = colorizer.getColor(colorTime, entity.position().add(upperXVec).add(upperYVec))
 
+                // Front face
                 vertex(upperX, upperY, 6.25E-4f, upperU, upperV, upperRightColor)
                 vertex(lowerX, upperY, 6.25E-4f, lowerU, upperV, upperLeftColor)
                 vertex(lowerX, lowerY, 6.25E-4f, lowerU, lowerV, lowerLeftColor)
                 vertex(upperX, lowerY, 6.25E-4f, upperU, lowerV, lowerRightColor)
+
+                // Back face (ensures visibility from behind and prevents backface culling by external shaderpacks)
+                vertex(upperX, upperY, -6.25E-4f, upperU, upperV, upperRightColor)
+                vertex(upperX, lowerY, -6.25E-4f, upperU, lowerV, lowerRightColor)
+                vertex(lowerX, lowerY, -6.25E-4f, lowerU, lowerV, lowerLeftColor)
+                vertex(lowerX, upperY, -6.25E-4f, lowerU, upperV, upperLeftColor)
             }
         }
 
