@@ -15,12 +15,15 @@ import net.neoforged.neoforge.common.NeoForge
 import net.neoforged.neoforge.event.RegisterCommandsEvent
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import coffee.cypher.hexbound.feature.construct.broadcasting.BroadcasterActivatedS2CPacket
+import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent
 import net.neoforged.bus.api.IEventBus
 
 @Mod(Hexbound.MOD_ID)
 class HexboundForge(modBus: IEventBus) {
     init {
         modBus.addListener(Hexbound::onInitialize)
+        modBus.addListener(Hexbound::registerPayloads)
         HexboundData.init(modBus)
 
         // Uncomment once InteropManager is fully migrated
@@ -47,6 +50,15 @@ object Hexbound {
             HexboundConfig.init()
             HexboundPatterns.register()
         }
+    }
+
+    fun registerPayloads(event: RegisterPayloadHandlersEvent) {
+        val registrar = event.registrar(MOD_ID)
+        registrar.playToClient(
+            BroadcasterActivatedS2CPacket.TYPE,
+            BroadcasterActivatedS2CPacket.STREAM_CODEC,
+            BroadcasterActivatedS2CPacket.Receiver::handle
+        )
     }
 
     fun onCommandRegistration(event: RegisterCommandsEvent) {

@@ -21,15 +21,4 @@ object HexboundClient {
     fun registerShaders(event: RegisterShadersEvent) {
         initShaders(event)
     }
-
-    @JvmStatic
-    @SubscribeEvent
-    fun registerPayloads(event: RegisterPayloadHandlersEvent) {
-        val registrar = event.registrar(Hexbound.MOD_ID)
-        registrar.playToClient(
-            BroadcasterActivatedS2CPacket.TYPE,
-            BroadcasterActivatedS2CPacket.STREAM_CODEC,
-            BroadcasterActivatedS2CPacket.Receiver::handle
-        )
-    }
 }
