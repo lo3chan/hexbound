@@ -12,6 +12,9 @@ description='''
 Addon for Hexcasting adding programmable Constructs and more
 '''
 
+[[mixins]]
+config = "hexbound.mixins.json"
+
 [[dependencies.hexbound]]
 modId="neoforge"
 type="required"

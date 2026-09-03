@@ -2,5 +2,6 @@
     "name": "item.hexcasting.book",
     "landing_text": "hexcasting.landing",
     "version": 1,
-    "extend": "hexcasting:thehexbook"
+    "extend": "hexcasting:thehexbook",
+    "use_resource_pack": true
 }

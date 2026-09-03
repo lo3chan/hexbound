@@ -19,11 +19,15 @@ import coffee.cypher.hexbound.feature.construct.broadcasting.BroadcasterActivate
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent
 import net.neoforged.bus.api.IEventBus
 
+import net.neoforged.neoforge.event.entity.EntityAttributeCreationEvent
+import coffee.cypher.hexbound.feature.construct.entity.SpiderConstructEntity
+
 @Mod(Hexbound.MOD_ID)
 class HexboundForge(modBus: IEventBus) {
     init {
         modBus.addListener(Hexbound::onInitialize)
         modBus.addListener(Hexbound::registerPayloads)
+        modBus.addListener(Hexbound::registerEntityAttributes)
         HexboundData.init(modBus)
 
         // Uncomment once InteropManager is fully migrated
@@ -59,6 +63,10 @@ object Hexbound {
             BroadcasterActivatedS2CPacket.STREAM_CODEC,
             BroadcasterActivatedS2CPacket.Receiver::handle
         )
+    }
+
+    fun registerEntityAttributes(event: EntityAttributeCreationEvent) {
+        event.put(HexboundData.EntityTypes.SPIDER_CONSTRUCT.get(), SpiderConstructEntity.createAttributes().build())
     }
 
     fun onCommandRegistration(event: RegisterCommandsEvent) {
