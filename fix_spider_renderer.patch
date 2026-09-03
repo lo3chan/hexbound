@@ -1,0 +1,50 @@
+--- src/main/kotlin/coffee/cypher/hexbound/feature/construct/rendering/SpiderConstructRenderer.kt
++++ src/main/kotlin/coffee/cypher/hexbound/feature/construct/rendering/SpiderConstructRenderer.kt
+@@ -20,10 +20,10 @@
+ import software.bernie.geckolib.renderer.layer.GeoRenderLayer
+
+ class SpiderConstructRenderer(
+     renderManager: EntityRendererProvider.Context
+ ) : GeoEntityRenderer<SpiderConstructEntity>(
+     renderManager,
+     SpiderConstructModel()
+ ) {
+     init {
+         addRenderLayer(SpiderConstructTranslucentLayer(this))
+@@ -70,9 +70,9 @@
+ class SpiderConstructItemLayer(
+     renderer: GeoRenderer<SpiderConstructEntity>
+ ) : BlockAndItemGeoLayer<SpiderConstructEntity>(renderer) {
+     override fun getStackForBone(bone: GeoBone, animatable: SpiderConstructEntity): ItemStack? {
+-        if ("item" in bone.name && !animatable.heldStack.isEmpty) {
++        if ("item" in bone.name && !animatable.heldStack.isEmpty) {
+             return animatable.heldStack
+         }
+
+@@ -107,9 +107,9 @@
+ class SpiderConstructTranslucentLayer(
+     renderer: GeoRenderer<SpiderConstructEntity>
+ ) : GeoRenderLayer<SpiderConstructEntity>(renderer) {
+
+-    override fun render(
++    override fun renderForBone(
+         poseStack: PoseStack,
+         animatable: SpiderConstructEntity,
+-        bakedModel: BakedGeoModel,
++        bone: GeoBone,
+         renderType: RenderType,
+         bufferSource: MultiBufferSource,
+         buffer: VertexConsumer,
+@@ -122,12 +122,10 @@
+
+         val layer = RenderType.entityTranslucentCull(layerTexture)
+         val builder = bufferSource.getBuffer(layer)
+
+-        poseStack.pushPose()
+-        renderer.preRender(poseStack, animatable, bakedModel, bufferSource, builder, false, partialTick, packedLight, packedOverlay, packedOverlay)
+-        renderer.actuallyRender(poseStack, animatable, bakedModel, layer, bufferSource, builder, false, partialTick, packedLight, packedOverlay, packedOverlay)
+-        renderer.postRender(poseStack, animatable, bakedModel, bufferSource, builder, false, partialTick, packedLight, packedOverlay, packedOverlay)
+-        poseStack.popPose()
++        renderer.renderRecursively(poseStack, animatable, bone, layer, bufferSource, builder, false, partialTick, packedLight, packedOverlay, packedOverlay)
+     }
+ }

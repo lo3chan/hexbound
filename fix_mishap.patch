@@ -1,0 +1,35 @@
+--- src/main/kotlin/coffee/cypher/hexbound/feature/construct/mishap/MishapNoConstruct.kt
++++ src/main/kotlin/coffee/cypher/hexbound/feature/construct/mishap/MishapNoConstruct.kt
+@@ -4,11 +4,11 @@
+ import at.petrak.hexcasting.api.casting.iota.Iota
+ import at.petrak.hexcasting.api.casting.mishaps.Mishap
+ import at.petrak.hexcasting.api.pigment.FrozenPigment
+-import dev.cafeteria.fakeplayerapi.server.FakeServerPlayer
+-import net.minecraft.entity.effect.StatusEffectInstance
+-import net.minecraft.entity.effect.StatusEffects
+-import net.minecraft.text.Text
+-import net.minecraft.util.DyeColor
++import net.neoforged.neoforge.common.util.FakePlayer
++import net.minecraft.world.effect.MobEffectInstance
++import net.minecraft.world.effect.MobEffects
++import net.minecraft.network.chat.Component
++import net.minecraft.world.item.DyeColor
+
+ class MishapNoConstruct : Mishap() {
+     override fun accentColor(ctx: CastingEnvironment, errorCtx: Context): FrozenPigment {
+@@ -16,12 +16,12 @@
+     }
+
+-    override fun errorMessage(ctx: CastingEnvironment, errorCtx: Context): Text {
++    override fun errorMessage(ctx: CastingEnvironment, errorCtx: Context): Component {
+         return error("no_construct", actionName(errorCtx.name))
+     }
+
+     override fun execute(ctx: CastingEnvironment, errorCtx: Context, stack: MutableList<Iota>) {
+-        if (ctx.caster !is FakeServerPlayer) {
+-            ctx.caster?.addStatusEffect(StatusEffectInstance(StatusEffects.SLOWNESS, 20, 2))
++        if (ctx.caster !is FakePlayer) {
++            ctx.caster?.addEffect(MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 20, 2))
+         }
+     }
+ }
