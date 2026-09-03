@@ -10,7 +10,7 @@ import at.petrak.hexcasting.api.casting.mishaps.MishapBadBlock
 import coffee.cypher.hexbound.feature.construct.broadcasting.BroadcastingContext
 import coffee.cypher.hexbound.feature.construct.broadcasting.ConstructBroadcasterBlock
 import coffee.cypher.hexbound.init.HexboundData
-import coffee.cypher.kettle.math.toDoubleVector
+import net.minecraft.world.phys.Vec3
 
 object OpBroadcastInstructions : SpellAction {
     override val argc = 2
@@ -19,17 +19,19 @@ object OpBroadcastInstructions : SpellAction {
         val broadcasterPos = args.getBlockPos(0, OpSendInstructions.argc)
         val instructions = args.getList(1, OpSendInstructions.argc)
 
-        ctx.assertVecInRange(broadcasterPos.toDoubleVector())
+        ctx.assertVecInRange(Vec3.atCenterOf(broadcasterPos))
 
         val broadcasterState = ctx.world.getBlockState(broadcasterPos)
 
-        if (!broadcasterState.isOf(HexboundData.Blocks.CONSTRUCT_BROADCASTER)) {
+        if (!broadcasterState.`is`(HexboundData.Blocks.CONSTRUCT_BROADCASTER.get())) {
             throw MishapBadBlock.of(broadcasterPos, "construct_broadcaster")
         }
 
+        val broadcasterBlock = broadcasterState.block as ConstructBroadcasterBlock
+
         return SpellAction.Result(
             Spell(
-                ConstructBroadcasterBlock.createBroadcastingContext(ctx.world, broadcasterState, broadcasterPos),
+                broadcasterBlock.createBroadcastingContext(ctx.world, broadcasterState, broadcasterPos),
                 instructions.toList()
             ),
             0,

@@ -14,12 +14,9 @@ import coffee.cypher.hexbound.init.HexboundData
 import coffee.cypher.hexbound.init.HexboundData.Items.SPIDER_CONSTRUCT_BATTERY
 import coffee.cypher.hexbound.init.HexboundData.Items.SPIDER_CONSTRUCT_CORE
 import coffee.cypher.hexbound.util.getAllay
-import net.minecraft.command.argument.EntityAnchorArgumentType
-import net.minecraft.entity.ItemEntity
-import net.minecraft.entity.passive.AllayEntity
-import org.quiltmc.qkl.library.math.component1
-import org.quiltmc.qkl.library.math.component2
-import org.quiltmc.qkl.library.math.component3
+import net.minecraft.commands.arguments.EntityAnchorArgument
+import net.minecraft.world.entity.animal.allay.Allay
+import net.minecraft.world.entity.item.ItemEntity
 
 object OpCreateSpiderConstruct : SpellAction {
     override val argc = 3
@@ -33,14 +30,14 @@ object OpCreateSpiderConstruct : SpellAction {
         ctx.assertEntityInRange(coreStack)
         ctx.assertEntityInRange(batteryStack)
 
-        if (coreStack.stack.isEmpty || !coreStack.stack.isOf(SPIDER_CONSTRUCT_CORE)) {
+        if (coreStack.item.isEmpty || !coreStack.item.`is`(SPIDER_CONSTRUCT_CORE.get())) {
             throw MishapInvalidIota.of(args[1], 1, "spider_component.core")
         }
 
         if (
-            batteryStack.stack.isEmpty ||
-            !batteryStack.stack.isOf(SPIDER_CONSTRUCT_BATTERY) ||
-            !SpiderConstructBatteryItem.isFullyCharged(batteryStack.stack)
+            batteryStack.item.isEmpty ||
+            !batteryStack.item.`is`(SPIDER_CONSTRUCT_BATTERY.get()) ||
+            !SpiderConstructBatteryItem.isFullyCharged(batteryStack.item)
         ) {
             throw MishapInvalidIota.of(args[2], 0, "spider_component.battery")
         }
@@ -48,28 +45,27 @@ object OpCreateSpiderConstruct : SpellAction {
         return SpellAction.Result(
             Spell(allay, coreStack, batteryStack),
             5 * MediaConstants.CRYSTAL_UNIT,
-            listOf(ParticleSpray.cloud(coreStack.pos, 1.0))
+            listOf(ParticleSpray.cloud(coreStack.position(), 1.0))
         )
     }
 
-    private class Spell(val allay: AllayEntity, val coreStack: ItemEntity, val batteryStack: ItemEntity) :
+    private class Spell(val allay: Allay, val coreStack: ItemEntity, val batteryStack: ItemEntity) :
         RenderedSpell {
         override fun cast(ctx: CastingEnvironment) {
-            coreStack.stack.decrement(1)
-            if (coreStack.stack.isEmpty) {
-                coreStack.kill()
+            coreStack.item.shrink(1)
+            if (coreStack.item.isEmpty) {
+                coreStack.discard()
             }
 
-            batteryStack.stack.decrement(1)
-            if (batteryStack.stack.isEmpty) {
-                coreStack.kill()
+            batteryStack.item.shrink(1)
+            if (batteryStack.item.isEmpty) {
+                batteryStack.discard()
             }
 
-            val (x, y, z) = allay.pos
-
+            val pos = allay.position()
             allay.discard()
 
-            val construct = HexboundData.EntityTypes.SPIDER_CONSTRUCT.create(ctx.world)
+            val construct = HexboundData.EntityTypes.SPIDER_CONSTRUCT.get().create(ctx.world)
 
             if (construct == null) {
                 Hexbound.LOGGER.error(
@@ -82,10 +78,9 @@ object OpCreateSpiderConstruct : SpellAction {
                 return
             }
 
-            construct.setPosition(x, y + 0.25, z)
-            construct.lookAt(EntityAnchorArgumentType.EntityAnchor.EYES, ctx.mishapSprayPos())
-            ctx.world.spawnEntity(construct)
+            construct.setPos(pos.x, pos.y + 0.25, pos.z)
+            construct.lookAt(EntityAnchorArgument.Anchor.EYES, ctx.mishapSprayPos())
+            ctx.world.addFreshEntity(construct)
         }
-
     }
 }

@@ -56,6 +56,10 @@ class ConstructCastEnv(val construct: AbstractConstructEntity) : CastingEnvironm
         return mutableListOf()
     }
 
+    override fun replaceItem(stackOk: java.util.function.Predicate<ItemStack>, replaceWith: ItemStack, hand: InteractionHand?): Boolean {
+        return false
+    }
+
     override fun getPigment(): FrozenPigment {
         return FrozenPigment.DEFAULT.get()
     }
