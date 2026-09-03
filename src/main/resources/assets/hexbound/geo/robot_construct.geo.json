@@ -1,0 +1,79 @@
+{
+	"format_version": "1.12.0",
+	"minecraft:geometry": [
+		{
+			"description": {
+				"identifier": "geometry.hexbound:robot_construct",
+				"texture_width": 64,
+				"texture_height": 64,
+				"visible_bounds_width": 3,
+				"visible_bounds_height": 3.5,
+				"visible_bounds_offset": [0, 1.25, 0]
+			},
+			"bones": [
+				{
+					"name": "treads",
+					"pivot": [0, 0, 0],
+					"cubes": [
+						{
+							"origin": [-8, 0, -9],
+							"size": [5, 3, 18],
+							"uv": {
+								"north": {"uv": [12.016, 27.016], "uv_size": [4.968, 2.968]},
+								"east": {"uv": [29.016, 0.016], "uv_size": [17.968, 2.968]},
+								"south": {"uv": [17.016, 27.016], "uv_size": [4.968, 2.968]},
+								"west": {"uv": [29.016, 3.016], "uv_size": [17.968, 2.968]},
+								"up": {"uv": [24.016, 0.016], "uv_size": [4.968, 17.968]},
+								"down": {"uv": [24.016, 35.984], "uv_size": [4.968, -17.968]}
+							}
+						},
+						{
+							"origin": [3, 0, -9],
+							"size": [5, 3, 18],
+							"uv": {
+								"north": {"uv": [12.016, 27.016], "uv_size": [4.968, 2.968]},
+								"east": {"uv": [29.016, 0.016], "uv_size": [17.968, 2.968]},
+								"south": {"uv": [17.016, 27.016], "uv_size": [4.968, 2.968]},
+								"west": {"uv": [29.016, 3.016], "uv_size": [17.968, 2.968]},
+								"up": {"uv": [24.016, 0.016], "uv_size": [4.968, 17.968]},
+								"down": {"uv": [24.016, 35.984], "uv_size": [4.968, -17.968]}
+							}
+						}
+					]
+				},
+				{
+					"name": "body",
+					"pivot": [0, 0, 0],
+					"cubes": [
+						{
+							"origin": [-6, 3, -6],
+							"size": [12, 9, 12],
+							"uv": {
+								"north": {"uv": [12.016, 0.016], "uv_size": [11.968, 8.968]},
+								"east": {"uv": [12.016, 9.016], "uv_size": [11.968, 8.968]},
+								"south": {"uv": [12.016, 18.016], "uv_size": [11.968, 8.968]},
+								"west": {"uv": [0.016, 24.016], "uv_size": [11.968, 8.968]},
+								"up": {"uv": [0.016, 0.016], "uv_size": [11.968, 11.968]},
+								"down": {"uv": [0.016, 23.984], "uv_size": [11.968, -11.968]}
+							}
+						}
+					]
+				},
+				{
+					"name": "itemHolder",
+					"parent": "body",
+					"pivot": [0, 13, 0],
+					"cubes": [
+						{
+							"origin": [0, 13, 0],
+							"size": [0, 0, 0],
+							"pivot": [0, 13, 0],
+							"rotation": [-90, 0, 0],
+							"uv": {}
+						}
+					]
+				}
+			]
+		}
+	]
+}
