@@ -1,6 +1,6 @@
 {
     "name": "hexbound.book.interop.hexal.title",
-    "category": "hexcasting:interop",
+    "category": "hexcasting:patterns",
     "icon": "minecraft:lantern",
     "flag": "mod:hexal",
     "sortnum": 1,

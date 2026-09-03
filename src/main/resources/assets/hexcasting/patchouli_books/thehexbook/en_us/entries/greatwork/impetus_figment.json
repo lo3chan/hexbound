@@ -1,7 +1,7 @@
 {
     "name": "hexbound.book.greatwork.impetus_figment.title",
     "category": "hexcasting:greatwork",
-    "icon": "hexcasting:impetus_storedplayer",
+    "icon": "minecraft:player_head",
     "advancement": "hexcasting:enlightenment",
     "entry_color": "54398a",
     "sortnum": 2.5,
