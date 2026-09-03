@@ -7,7 +7,6 @@
     "BlockEntityStoredPlayerImpetusMixin",
     "CastingContextMixin",
     "CastingHarnessMixin",
-    "FabricXPlatMixin",
     "HexInteropMixin",
     "MishapSideEffectMixin",
     "OpEntityRaycastMixin",
