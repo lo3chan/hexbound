@@ -10,16 +10,19 @@ import net.neoforged.bus.api.SubscribeEvent
 
 @EventBusSubscriber(modid = Hexbound.MOD_ID, bus = EventBusSubscriber.Bus.MOD, value = [Dist.CLIENT])
 object HexboundClient {
+    @JvmStatic
     @SubscribeEvent
     fun registerRenderers(event: EntityRenderersEvent.RegisterRenderers) {
         initEntityRenderers(event)
     }
 
+    @JvmStatic
     @SubscribeEvent
     fun registerShaders(event: RegisterShadersEvent) {
         initShaders(event)
     }
 
+    @JvmStatic
     @SubscribeEvent
     fun registerPayloads(event: RegisterPayloadHandlersEvent) {
         val registrar = event.registrar(Hexbound.MOD_ID)
