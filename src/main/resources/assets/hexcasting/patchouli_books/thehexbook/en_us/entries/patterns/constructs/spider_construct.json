@@ -1,6 +1,6 @@
 {
     "name": "hexbound.book.constructs.spider_construct.title",
-    "category": "hexbound:patterns/constructs",
+    "category": "hexcasting:patterns/constructs",
     "icon": "hexbound:spider_construct_core",
     "sortnum": 3,
     "advancement": "hexcasting:root",

@@ -14,27 +14,5 @@ fun initEntityRenderers(event: EntityRenderersEvent.RegisterRenderers) {
 }
 
 fun initShaders(event: RegisterShadersEvent) {
-    try {
-        event.registerShader(
-            ShaderInstance(
-                event.resourceProvider,
-                "hexbound__shield",
-                DefaultVertexFormat.NEW_ENTITY
-            )
-        ) { ShieldRenderLayer.REGULAR_SHADER = it }
-    } catch (e: Exception) {
-        Hexbound.LOGGER.error("Failed to register hexbound__shield shader", e)
-    }
-
-    try {
-        event.registerShader(
-            ShaderInstance(
-                event.resourceProvider,
-                "hexbound__shield_glitchy",
-                DefaultVertexFormat.NEW_ENTITY
-            )
-        ) { ShieldRenderLayer.GLITCHY_SHADER = it }
-    } catch (e: Exception) {
-        Hexbound.LOGGER.error("Failed to register hexbound__shield_glitchy shader", e)
-    }
+    // Unused core shaders bypassed; native double-sided translucent entity rendering is used instead
 }

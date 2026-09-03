@@ -1,6 +1,6 @@
 {
     "name": "hexbound.book.constructs.bind_broadcast.title",
-    "category": "hexbound:patterns/constructs",
+    "category": "hexcasting:patterns/constructs",
     "icon": "hexbound:construct_broadcaster",
     "sortnum": 4,
     "advancement": "hexcasting:root",

@@ -1,6 +1,6 @@
 {
     "name": "hexbound.book.constructs.selecting_constructs.title",
-    "category": "hexbound:patterns/constructs",
+    "category": "hexcasting:patterns/constructs",
     "icon": "minecraft:wandering_trader_spawn_egg",
     "sortnum": 5,
     "advancement": "hexcasting:root",

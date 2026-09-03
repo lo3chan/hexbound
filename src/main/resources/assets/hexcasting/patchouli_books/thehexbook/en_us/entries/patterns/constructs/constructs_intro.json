@@ -1,6 +1,6 @@
 {
     "name": "hexbound.book.constructs.constructs_intro.title",
-    "category": "hexbound:patterns/constructs",
+    "category": "hexcasting:patterns/constructs",
     "icon": "minecraft:redstone",
     "sortnum": 1,
     "advancement": "hexcasting:root",

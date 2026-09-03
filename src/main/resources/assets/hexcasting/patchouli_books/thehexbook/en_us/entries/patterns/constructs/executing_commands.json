@@ -1,6 +1,6 @@
 {
     "name": "hexbound.book.constructs.executing_commands.title",
-    "category": "hexbound:patterns/constructs",
+    "category": "hexcasting:patterns/constructs",
     "icon": "minecraft:piston",
     "sortnum": 2,
     "advancement": "hexcasting:root",
