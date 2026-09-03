@@ -1,24 +1,20 @@
 package coffee.cypher.hexbound.feature.media_attachment
 
 import at.petrak.hexcasting.api.addldata.ADMediaHolder
-import at.petrak.hexcasting.fabric.cc.adimpl.CCMediaHolder
-import coffee.cypher.hexbound.init.Hexbound
-import net.minecraft.item.ItemStack
-import net.minecraft.registry.Registries
-import org.quiltmc.qkl.library.serialization.CodecFactory
-import org.quiltmc.qsl.registry.attachment.api.RegistryEntryAttachment
-
-internal val STATIC_MEDIA_ATTACHMENT by lazy {
-    RegistryEntryAttachment.builder(
-        Registries.ITEM,
-        Hexbound.id("media_values"),
-        StaticMediaValue::class.java,
-        CodecFactory.create<StaticMediaValue>()
-    ).build()
-}
+import coffee.cypher.hexbound.init.HexboundData
+import net.minecraft.world.item.ItemStack
 
 fun getMediaAttachmentForStack(stack: ItemStack): ADMediaHolder? {
-    val attachment = STATIC_MEDIA_ATTACHMENT.getNullable(stack.item) ?: return null
+    val attachment = stack.get(HexboundData.STATIC_MEDIA_VALUE.get()) ?: return null
 
-    return CCMediaHolder.Static({ attachment.value }, attachment.priority, stack)
+    return object : ADMediaHolder {
+        override fun getMedia(): Long = attachment.value.toLong()
+        override fun getMaxMedia(): Long = attachment.value.toLong()
+        override fun setMedia(media: Long) {}
+        override fun canProvide(): Boolean = true
+        override fun canRecharge(): Boolean = false
+        override fun getConsumptionPriority(): Int = attachment.priority
+        override fun canConstructHolder(): Boolean = false
+        override fun writeMediaHolder(tag: net.minecraft.nbt.CompoundTag?): net.minecraft.nbt.CompoundTag? = tag
+    }
 }

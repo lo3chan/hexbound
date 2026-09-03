@@ -3,86 +3,72 @@ package coffee.cypher.hexbound.feature.construct.broadcasting
 import at.petrak.hexcasting.common.particles.ConjureParticleOptions
 import coffee.cypher.hexbound.init.Hexbound
 import coffee.cypher.hexbound.init.config.HexboundConfig
-import coffee.cypher.hexbound.util.times
-import net.minecraft.client.MinecraftClient
-import net.minecraft.client.network.ClientPlayNetworkHandler
-import net.minecraft.network.PacketByteBuf
-import net.minecraft.server.world.ServerWorld
-import net.minecraft.util.math.BlockPos
-import net.minecraft.util.math.ChunkPos
-import net.minecraft.util.math.Vec3d
-import org.quiltmc.loader.api.minecraft.ClientOnly
-import org.quiltmc.qkl.library.math.plus
-import org.quiltmc.qkl.library.networking.getPlayersTrackingChunk
-import org.quiltmc.qsl.networking.api.PacketByteBufs
-import org.quiltmc.qsl.networking.api.PacketSender
-import org.quiltmc.qsl.networking.api.ServerPlayNetworking
-import org.quiltmc.qsl.networking.api.client.ClientPlayNetworking.ChannelReceiver
-
+import io.netty.buffer.ByteBuf
+import net.minecraft.core.BlockPos
+import net.minecraft.network.codec.StreamCodec
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload
+import net.minecraft.server.level.ServerLevel
+import net.minecraft.world.level.ChunkPos
+import net.minecraft.world.phys.Vec3
+import net.neoforged.neoforge.network.PacketDistributor
+import net.neoforged.neoforge.network.handling.IPayloadContext
 
 data class BroadcasterActivatedS2CPacket(
-    val particleCenter: Vec3d,
+    val particleCenter: Vec3,
     val particleOffset: Double,
     val color: Int
-) {
-    fun send(world: ServerWorld) {
+) : CustomPacketPayload {
+
+    override fun type(): CustomPacketPayload.Type<BroadcasterActivatedS2CPacket> = TYPE
+
+    fun send(world: ServerLevel) {
         val chunk = ChunkPos(BlockPos(particleCenter.x.toInt(), particleCenter.y.toInt(), particleCenter.z.toInt()))
-
-        val buf = PacketByteBufs.create().also {
-            it.writeInt(color)
-            it.writeDouble(particleCenter.x)
-            it.writeDouble(particleCenter.y)
-            it.writeDouble(particleCenter.z)
-            it.writeDouble(particleOffset)
-        }
-
-        ServerPlayNetworking.send(world.getPlayersTrackingChunk(chunk), CHANNEL, buf)
+        PacketDistributor.sendToPlayersTrackingChunk(world, chunk, this)
     }
 
     companion object {
-        val CHANNEL = Hexbound.id("broadcaster_activated_s2c")
+        val TYPE = CustomPacketPayload.Type<BroadcasterActivatedS2CPacket>(Hexbound.id("broadcaster_activated_s2c"))
+
+        val STREAM_CODEC: StreamCodec<ByteBuf, BroadcasterActivatedS2CPacket> = StreamCodec.of(
+            { buf, packet ->
+                buf.writeInt(packet.color)
+                buf.writeDouble(packet.particleCenter.x)
+                buf.writeDouble(packet.particleCenter.y)
+                buf.writeDouble(packet.particleCenter.z)
+                buf.writeDouble(packet.particleOffset)
+            },
+            { buf ->
+                val color = buf.readInt()
+                val x = buf.readDouble()
+                val y = buf.readDouble()
+                val z = buf.readDouble()
+                val offset = buf.readDouble()
+                BroadcasterActivatedS2CPacket(Vec3(x, y, z), offset, color)
+            }
+        )
     }
 
-    @ClientOnly
-    object Receiver : ChannelReceiver {
-        override fun receive(
-            client: MinecraftClient,
-            handler: ClientPlayNetworkHandler,
-            buf: PacketByteBuf,
-            responseSender: PacketSender
-        ) {
-            val color = buf.readInt()
+    object Receiver {
+        fun handle(payload: BroadcasterActivatedS2CPacket, context: IPayloadContext) {
+            context.enqueueWork {
+                val player = context.player()
+                val level = player.level()
+                val amount = HexboundConfig.broadcasterParticleAmount
+                val angleOffset = if (amount > 0) 360f / amount else 0f
 
-            val x = buf.readDouble()
-            val y = buf.readDouble()
-            val z = buf.readDouble()
-            val particleCenter = Vec3d(x, y, z)
+                repeat(amount) {
+                    val angle = Math.toRadians((it * angleOffset).toDouble())
+                    val particleVec = Vec3(Math.cos(angle), 0.0, Math.sin(angle))
+                    val particleStart = payload.particleCenter.add(particleVec.scale(payload.particleOffset))
+                    val particleVelocity = particleVec.scale(0.2)
 
-            val particleOffset = buf.readDouble()
-
-            client.execute {
-                val angleOffset = if (HexboundConfig.broadcasterParticleAmount > 0) {
-                    360f / HexboundConfig.broadcasterParticleAmount
-                } else {
-                    0f
-                }
-
-                repeat(HexboundConfig.broadcasterParticleAmount) {
-                    val angle = it * angleOffset
-
-                    val particleVec = Vec3d.fromPolar(0f, angle)
-
-                    val particleStart = particleCenter + particleVec * particleOffset
-                    val particleVelocity = particleVec * 0.2
-
-                    client.world?.addParticle(
-                        ConjureParticleOptions(color),
+                    level.addParticle(
+                        ConjureParticleOptions(payload.color),
                         particleStart.x, particleStart.y, particleStart.z,
-                        particleVelocity.x, particleVelocity.y, particleVelocity.z,
+                        particleVelocity.x, particleVelocity.y, particleVelocity.z
                     )
                 }
             }
         }
-
     }
 }

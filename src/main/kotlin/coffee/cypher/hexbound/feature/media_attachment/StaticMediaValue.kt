@@ -19,10 +19,9 @@ data class StaticMediaValue(val priority: Int, val amount: Int, val unit: Unit) 
     }
 
     val value get() = unit.calculate(amount)
-
     companion object {
-        val UNIT_CODEC: Codec<Unit> = StringRepresentable.fromEnum({ Unit.entries.toTypedArray() })
-        val UNIT_STREAM_CODEC: StreamCodec<ByteBuf, Unit> = ByteBufCodecs.idMapper({ it.ordinal }, { i -> Unit.entries.toTypedArray()[i] })
+        val UNIT_CODEC: Codec<Unit> = StringRepresentable.fromEnum { Unit.entries.toTypedArray() }
+        val UNIT_STREAM_CODEC: StreamCodec<ByteBuf, Unit> = ByteBufCodecs.fromCodec(UNIT_CODEC)
 
         val CODEC: Codec<StaticMediaValue> = RecordCodecBuilder.create { instance ->
             instance.group(

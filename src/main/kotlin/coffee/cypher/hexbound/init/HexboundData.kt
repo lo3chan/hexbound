@@ -33,7 +33,7 @@ object HexboundData {
     val ENTITY_TYPES = DeferredRegister.create(BuiltInRegistries.ENTITY_TYPE, Hexbound.MOD_ID)
     val STATUS_EFFECTS = DeferredRegister.create(BuiltInRegistries.MOB_EFFECT, Hexbound.MOD_ID)
     val TABS = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, Hexbound.MOD_ID)
-    val DATA_COMPONENTS = DeferredRegister.createDataComponents(BuiltInRegistries.DATA_COMPONENT_TYPE, Hexbound.MOD_ID)
+    val DATA_COMPONENTS = DeferredRegister.createDataComponents(Hexbound.MOD_ID)
 
     val CONSTRUCT_COMMANDS_KEY = ResourceKey.createRegistryKey<ConstructCommand.Type<*>>(Hexbound.id("construct_command"))
     val CONSTRUCT_COMMANDS = DeferredRegister.create(CONSTRUCT_COMMANDS_KEY, Hexbound.MOD_ID)
