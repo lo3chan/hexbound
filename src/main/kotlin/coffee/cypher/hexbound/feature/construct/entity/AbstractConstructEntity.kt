@@ -216,7 +216,7 @@ abstract class AbstractConstructEntity(
         return false // equivalent to cannotDespawn() returning true
     }
 
-    override fun getArmorItems(): Iterable<ItemStack> {
+    override fun getArmorSlots(): Iterable<ItemStack> {
         return mutableListOf()
     }
 
@@ -229,19 +229,19 @@ abstract class AbstractConstructEntity(
 
         if (level() is ServerLevel) {
             command?.let {
-                nbt["command"] = encodeCommand(it)
+                nbt.put("command", encodeCommand(it))
             }
 
             castVm?.let {
-                nbt["casting_image"] = it.image.serializeToNbt()
+                nbt.put("casting_image", it.image.serializeToNbt())
             }
 
             boundPlayerData?.let {
-                nbt["boundPlayer"] = it.toNbt()
+                nbt.put("boundPlayer", it.toNbt())
             }
 
             boundPattern?.let {
-                nbt["boundPattern"] = it.serializeToNBT()
+                nbt.put("boundPattern", it.serializeToNBT())
             }
         }
     }
@@ -250,8 +250,8 @@ abstract class AbstractConstructEntity(
         val (command, callback) = commandPair
         val compound = CompoundTag()
 
-        val type = HexboundData.ModRegistries.CONSTRUCT_COMMANDS.getId(command.getType())
-        compound["type"] = type.toString()
+        val type = HexboundData.CONSTRUCT_COMMANDS.registry.get()?.getKey(command.getType())
+        compound.putString("type", type?.toString() ?: "")
 
         val callbackList = ListTag()
 
@@ -259,17 +259,12 @@ abstract class AbstractConstructEntity(
             callbackList.add(IotaType.serialize(it))
         }
 
-        compound["on_complete"] = callbackList
-
-        if (HexboundData.ModRegistries.CONSTRUCT_COMMANDS.get(type) != command.getType()) {
-            Hexbound.LOGGER.warn("Construct command type for $command was not registered")
-            compound["data"] = CompoundTag()
-            return compound
-        }
+        compound.put("on_complete", callbackList)
 
         @Suppress("UNCHECKED_CAST")
-        compound["data"] =
-            (command.getType().codec as Codec<C>).encodeStart(NbtOps.INSTANCE, command).result().get()
+        (command.getType().codec as? Codec<C>)?.encodeStart(NbtOps.INSTANCE, command)?.result()?.ifPresent {
+            compound.put("data", it)
+        }
 
         return compound
     }
@@ -281,19 +276,21 @@ abstract class AbstractConstructEntity(
         val serverWorld = level() as? ServerLevel ?: return
 
         if (nbt.contains("command")) {
-            //TODO maybe this can go into a command frame class (low priority)
             val commandNbt = nbt.getCompound("command")
             val typeId = ResourceLocation.tryParse(commandNbt.getString("type"))
-            val type = HexboundData.ModRegistries.CONSTRUCT_COMMANDS.get(typeId)
-            val result = type.codec.decode(NbtOps.INSTANCE, commandNbt.get("data"))
-            val onComplete = commandNbt.getList("on_complete", Tag.COMPOUND_TYPE.toInt()).map {
-                IotaType.deserialize(it.downcast(CompoundTag.TYPE), serverWorld)
-            }
+            val type = typeId?.let { HexboundData.CONSTRUCT_COMMANDS.registry.get()?.get(it) }
+            
+            if (type != null) {
+                val result = type.codec.decode(NbtOps.INSTANCE, commandNbt.get("data"))
+                val onComplete = commandNbt.getList("on_complete", Tag.TAG_COMPOUND.toInt()).mapNotNull {
+                    (it as? CompoundTag)?.let { tag -> IotaType.deserialize(tag, serverWorld) }
+                }
 
-            val newCommand = result.result().getOrNull()?.first
+                val newCommand = result.result().map { it.first }.orElse(null)
 
-            if (newCommand != null) {
-                executeCommand(newCommand, onComplete, serverWorld)
+                if (newCommand != null) {
+                    executeCommand(newCommand, onComplete, serverWorld)
+                }
             }
         }
 
