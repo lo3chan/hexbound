@@ -3,11 +3,11 @@ package coffee.cypher.hexbound.feature.construct.command.execution
 import coffee.cypher.hexbound.feature.construct.command.ConstructCommand
 import coffee.cypher.hexbound.feature.construct.entity.AbstractConstructEntity
 import coffee.cypher.kettle.scheduler.*
-import net.minecraft.server.world.ServerWorld
+import net.minecraft.server.level.ServerLevel
 
 class ConstructCommandExecutor(
     val construct: AbstractConstructEntity,
-    val world: ServerWorld,
+    val world: ServerLevel,
     val onComplete: () -> Unit,
     val onError: (Throwable) -> Unit
 ) {
@@ -19,7 +19,7 @@ class ConstructCommandExecutor(
         cancelCommand()
 
         currentTask = scheduler.task {
-            run once {
+            this run once {
                 yieldsAfterMs = 5.0
             }
 
@@ -57,8 +57,9 @@ class ConstructCommandExecutor(
             onError(realError)
         }
 
-        if (currentTask?.state is Task.State.Stopped) {
-            scheduler.removeTask(currentTask!!)
+        val task = currentTask
+        if (task != null && task.state is Task.State.Stopped) {
+            scheduler.removeTask(task)
             currentTask = null
         }
     }

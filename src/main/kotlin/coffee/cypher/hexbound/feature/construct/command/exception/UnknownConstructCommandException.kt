@@ -1,10 +1,7 @@
 package coffee.cypher.hexbound.feature.construct.command.exception
 
-import org.quiltmc.qkl.library.text.buildText
-import org.quiltmc.qkl.library.text.translatable
+import net.minecraft.network.chat.Component
 
 class UnknownConstructCommandException(val original: Throwable) : ConstructCommandException(
-    buildText {
-        translatable("hexbound.construct.exception.unknown_error", original.toString())
-    }
+    Component.translatable("hexbound.construct.exception.unknown_error", original.toString())
 )

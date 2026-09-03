@@ -114,9 +114,9 @@ class SpiderConstructTranslucentLayer(
         poseStack: PoseStack,
         animatable: SpiderConstructEntity,
         bakedModel: BakedGeoModel,
-        renderType: RenderType,
+        renderType: RenderType?,
         bufferSource: MultiBufferSource,
-        buffer: VertexConsumer,
+        buffer: VertexConsumer?,
         partialTick: Float,
         packedLight: Int,
         packedOverlay: Int

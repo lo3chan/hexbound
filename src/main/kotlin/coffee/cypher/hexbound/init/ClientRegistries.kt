@@ -9,8 +9,8 @@ import net.neoforged.neoforge.client.event.EntityRenderersEvent
 import net.neoforged.neoforge.client.event.RegisterShadersEvent
 
 fun initEntityRenderers(event: EntityRenderersEvent.RegisterRenderers) {
-    event.registerEntityRenderer(HexboundData.EntityTypes.SPIDER_CONSTRUCT.get(), ::SpiderConstructRenderer)
-    event.registerEntityRenderer(HexboundData.EntityTypes.SHIELD.get(), ::ShieldRenderer)
+    event.registerEntityRenderer(HexboundData.EntityTypes.SPIDER_CONSTRUCT.get()) { ctx -> SpiderConstructRenderer(ctx) }
+    event.registerEntityRenderer(HexboundData.EntityTypes.SHIELD.get()) { ctx -> ShieldRenderer(ctx) }
 }
 
 fun initShaders(event: RegisterShadersEvent) {

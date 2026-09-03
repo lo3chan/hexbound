@@ -76,7 +76,7 @@ class SpiderConstructEntity(
             if (!level().isClientSide) {
                 val serverPlayer = player as ServerPlayer
 
-                if (!serverPlayer.gameMode.isBlockBreakingRestricted) {
+                if (!serverPlayer.isSpectator) {
                     isAltModelEnabled = item == Items.IRON_BLOCK
                 }
             } else {
@@ -120,8 +120,8 @@ class SpiderConstructEntity(
         return dist != null && dist <= 36.0 && command == null
     }
 
-    override fun getDefaultName(): Component {
-        val name = super.getDefaultName()
+    override fun getTypeName(): Component {
+        val name = super.getTypeName()
         return redirectSpiderLang(name.string, this).let { Component.literal(it) }
     }
 

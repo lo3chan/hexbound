@@ -15,7 +15,7 @@ class ConstructFakePlayer(
     }
 
     override fun getDisplayName(): Component {
-        return construct.displayName
+        return construct.displayName ?: Component.literal("[Construct]")
     }
 
     fun resetToValidState() {}

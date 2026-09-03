@@ -1,5 +1,5 @@
 package coffee.cypher.hexbound.feature.construct.command.exception
 
-import net.minecraft.text.Text
+import net.minecraft.network.chat.Component
 
-open class ConstructCommandException(val errorText: Text) : Exception()
+open class ConstructCommandException(val errorText: Component) : Exception()

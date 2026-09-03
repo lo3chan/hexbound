@@ -237,7 +237,7 @@ abstract class AbstractConstructEntity(
             }
 
             boundPlayerData?.let {
-                nbt.put("boundPlayer", it.toNbt())
+                nbt.put("boundPlayer", it.toNbt(level().registryAccess()))
             }
 
             boundPattern?.let {
@@ -303,7 +303,7 @@ abstract class AbstractConstructEntity(
 
         boundPlayerData = null
         if (nbt.contains("boundPlayer")) {
-            boundPlayerData = MemorizedPlayerData.fromNbt(nbt.getCompound("boundPlayer"))
+            boundPlayerData = MemorizedPlayerData.fromNbt(nbt.getCompound("boundPlayer"), serverWorld.registryAccess())
         }
 
         boundPattern = null
