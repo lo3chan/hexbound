@@ -7,6 +7,7 @@ import coffee.cypher.hexbound.feature.construct.entity.component.ItemHolderCompo
 import coffee.cypher.hexbound.init.HexboundData
 import coffee.cypher.hexbound.util.formatVector
 import coffee.cypher.hexbound.util.localizeSide
+import coffee.cypher.kettle.scheduler.TaskContext
 import kotlinx.serialization.Contextual
 import kotlinx.serialization.Serializable
 import net.minecraft.core.BlockPos
@@ -36,7 +37,7 @@ class Harvest(
 ) : ConstructCommand<Harvest> {
     override fun getType() = HexboundData.ConstructCommandTypes.HARVEST
 
-    override suspend fun coffee.cypher.hexbound.util.TaskContext<out ConstructCommandContext>.execute() {
+    override suspend fun TaskContext<out ConstructCommandContext>.execute() {
         withContext {
             val state = world.getBlockState(target)
             val player = requireComponent(InteractionComponent).getInteractionPlayer(world)
@@ -130,7 +131,7 @@ class UseItemOnBlock(
 ) : ConstructCommand<UseItemOnBlock> {
     override fun getType() = HexboundData.ConstructCommandTypes.USE_ON_BLOCK
 
-    override suspend fun coffee.cypher.hexbound.util.TaskContext<out ConstructCommandContext>.execute() {
+    override suspend fun TaskContext<out ConstructCommandContext>.execute() {
         withContext {
             val player = requireComponent(InteractionComponent).getInteractionPlayer(world)
             val itemHolder = requireComponent(ItemHolderComponent)

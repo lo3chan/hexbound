@@ -8,10 +8,10 @@ import coffee.cypher.hexbound.init.HexboundData
 import coffee.cypher.kettle.scheduler.TaskContext
 import kotlinx.serialization.Contextual
 import kotlinx.serialization.Serializable
-import net.minecraft.entity.ItemEntity
-import net.minecraft.item.ItemStack
-import net.minecraft.server.world.ServerWorld
-import net.minecraft.text.Text
+import net.minecraft.network.chat.Component
+import net.minecraft.server.level.ServerLevel
+import net.minecraft.world.entity.item.ItemEntity
+import net.minecraft.world.item.ItemStack
 import java.util.*
 
 @Serializable
@@ -24,7 +24,7 @@ class PickUp(
         withContext {
             val target = world.getEntity(targetUuid) ?: throw BadTargetConstructCommandException("does_not_exist")
 
-            if (construct.squaredDistanceTo(target) > 6.25) {
+            if (construct.distanceToSqr(target) > 6.25) {
                 throw BadTargetConstructCommandException(target, "too_far")
             }
 
@@ -32,9 +32,9 @@ class PickUp(
 
             if (!itemHolder.heldStack.isEmpty) {
                 throw ConstructCommandException(
-                    Text.translatable(
+                    Component.translatable(
                         "hexbound.construct.exception.already_has_item",
-                        itemHolder.heldStack.name
+                        itemHolder.heldStack.hoverName
                     )
                 )
             }
@@ -47,16 +47,16 @@ class PickUp(
                 throw BadTargetConstructCommandException(target, "target_expired")
             }
 
-            itemHolder.heldStack = target.stack.copy()
+            itemHolder.heldStack = target.item.copy()
             target.discard()
         }
     }
 
-    override fun display(world: ServerWorld): Text {
-        val target = world.getEntity(targetUuid)?.name
-                     ?: Text.translatable("hexbound.construct.command.unknown_item")
+    override fun display(world: ServerLevel): Component {
+        val target = world.getEntity(targetUuid)?.displayName
+                     ?: Component.translatable("hexbound.construct.command.unknown_item")
 
-        return Text.translatable("hexbound.construct.command.pick_up", target)
+        return Component.translatable("hexbound.construct.command.pick_up", target)
     }
 }
 
@@ -69,10 +69,10 @@ class DropOff : ConstructCommand<DropOff> {
             val itemHolder = requireComponent(ItemHolderComponent)
 
             if (itemHolder.heldStack.isEmpty) {
-                throw ConstructCommandException(Text.translatable("hexbound.construct.exception.no_item"))
+                throw ConstructCommandException(Component.translatable("hexbound.construct.exception.no_item"))
             }
 
-            construct.world.spawnEntity(
+            construct.level().addFreshEntity(
                 ItemEntity(
                     world,
                     construct.x,
@@ -88,7 +88,7 @@ class DropOff : ConstructCommand<DropOff> {
         }
     }
 
-    override fun display(world: ServerWorld): Text {
-        return Text.translatable("hexbound.construct.command.drop_off")
+    override fun display(world: ServerLevel): Component {
+        return Component.translatable("hexbound.construct.command.drop_off")
     }
 }
