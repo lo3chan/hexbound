@@ -17,9 +17,10 @@ public class OpEntityRaycastMixin {
             method = "execute",
             at = @At(
                     value = "INVOKE",
-                    target = "Lnet/minecraft/world/entity/projectile/ProjectileUtil;getEntityHitResult(Lnet/minecraft/world/entity/Entity;Lnet/minecraft/world/phys/Vec3;Lnet/minecraft/world/phys/Vec3;Lnet/minecraft/world/phys/AABB;Ljava/util/function/Predicate;D)Lnet/minecraft/world/phys/EntityHitResult;"
+                    target = "Lat/petrak/hexcasting/common/casting/actions/raycast/OpEntityRaycast;getEntityHitResult(Lnet/minecraft/world/entity/Entity;Lnet/minecraft/world/level/Level;Lnet/minecraft/world/phys/Vec3;Lnet/minecraft/world/phys/Vec3;Lnet/minecraft/world/phys/AABB;Ljava/util/function/Predicate;D)Lnet/minecraft/world/phys/EntityHitResult;"
             ),
-            index = 4
+            index = 5,
+            require = 0
     )
     private Predicate<Entity> hexbound$raycastIgnoresShield(Predicate<Entity> original, @Local(ordinal = 1) Vec3 look) {
         return (e) -> original.test(e) && !ShieldEntity.canBypassShieldForDirection(look, e);
