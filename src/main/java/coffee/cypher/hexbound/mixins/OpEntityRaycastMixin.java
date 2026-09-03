@@ -3,8 +3,8 @@ package coffee.cypher.hexbound.mixins;
 import at.petrak.hexcasting.common.casting.actions.raycast.OpEntityRaycast;
 import coffee.cypher.hexbound.feature.combat.shield.ShieldEntity;
 import com.llamalad7.mixinextras.sugar.Local;
-import net.minecraft.entity.Entity;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.phys.Vec3;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.ModifyArg;
@@ -17,11 +17,11 @@ public class OpEntityRaycastMixin {
             method = "execute",
             at = @At(
                     value = "INVOKE",
-                    target = "Lnet/minecraft/entity/projectile/ProjectileUtil;raycast(Lnet/minecraft/entity/Entity;Lnet/minecraft/util/math/Vec3d;Lnet/minecraft/util/math/Vec3d;Lnet/minecraft/util/math/Box;Ljava/util/function/Predicate;D)Lnet/minecraft/util/hit/EntityHitResult;"
+                    target = "Lnet/minecraft/world/entity/projectile/ProjectileUtil;getEntityHitResult(Lnet/minecraft/world/entity/Entity;Lnet/minecraft/world/phys/Vec3;Lnet/minecraft/world/phys/Vec3;Lnet/minecraft/world/phys/AABB;Ljava/util/function/Predicate;D)Lnet/minecraft/world/phys/EntityHitResult;"
             ),
             index = 4
     )
-    private Predicate<Entity> hexbound$raycastIgnoresShield(Predicate<Entity> original, @Local(ordinal = 1) Vec3d look) {
+    private Predicate<Entity> hexbound$raycastIgnoresShield(Predicate<Entity> original, @Local(ordinal = 1) Vec3 look) {
         return (e) -> original.test(e) && !ShieldEntity.canBypassShieldForDirection(look, e);
     }
 }
