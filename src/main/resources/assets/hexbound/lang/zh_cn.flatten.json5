@@ -35,6 +35,65 @@
             item: "物品",
             item_stack: "物品组"
         },
+        "action.hexbound:": {
+            "colorizer/": {
+                "save": "记忆染色剂",
+                "load": "回想染色剂",
+                "delete": "遗忘染色剂"
+            },
+            "create_shield/": {
+                "normal": "咒术护盾",
+                "glitchy": "不稳定咒术护盾"
+            },
+            set_fake_impetus_player: "绑定虚意识",
+            "pattern/": {
+                rotate: "旋转之馏化",
+                merge: "画家之馏化",
+                head: "起笔之馏化",
+                tail: "收笔之馏化",
+                line_count: "片段之纯化",
+                start_dir: "缠转之纯化"
+            },
+            construct_get_self: "自动机之精思",
+            "give_command/": {
+                pick_up: "命令：捡拾物品",
+                drop_off: "命令：丢弃物品",
+                drop_item: "命令：丢弃物品",
+                move_to: "命令：移至位置",
+                "harvest": "命令：收割",
+                "use/": {
+                    block: "命令：对方块使用",
+                    on_block: "命令：对方块使用"
+                }
+            },
+            bind_construct: "技师之策略",
+            "instructions/": {
+                send: "发送指令",
+                broadcast: "广播指令"
+            },
+            get_main_hand: "决斗士之纯化",
+            get_off_hand: "持盾士之纯化",
+            "get_inventory/": {
+                stacks: "囤积者之馏化",
+                items: "收集者之馏化"
+            },
+            "get_stack_prop/": {
+                "size": "司库之纯化",
+                "item": "后勤员之纯化"
+            },
+            "create_construct/": {
+                spider: "构建蛛形组构体"
+            },
+            "get_entity/construct": "实体之纯化：组构体",
+            "zone_entity/construct": "区域之馏化：组构体",
+            "zone_entity/not_construct": "区域之馏化：非组构体"
+        },
+        "action.book.hexbound:": {
+            "get_entity/construct": "实体之纯化：组构体",
+            "zone_entity/construct": "区域之馏化：组构体",
+            "zone_entity/not_construct": "区域之馏化：非组构体",
+            "get_off_hand": "持盾士之纯化"
+        },
         "spell.hexbound:": {
             "colorizer/": {
                 "save": "记忆染色剂",
@@ -58,10 +117,12 @@
             "give_command/": {
                 pick_up: "命令：捡拾物品",
                 drop_off: "命令：丢弃物品",
+                drop_item: "命令：丢弃物品",
                 move_to: "命令：移至位置",
                 "harvest": "命令：收割",
                 "use/": {
-                    block: "命令：对方块使用"
+                    block: "命令：对方块使用",
+                    on_block: "命令：对方块使用"
                 }
             },
             bind_construct: "技师之策略",

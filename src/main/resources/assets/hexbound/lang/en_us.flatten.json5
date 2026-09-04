@@ -35,6 +35,65 @@
             item: "Item",
             item_stack: "Item Stack"
         },
+        "action.hexbound:": {
+            "colorizer/": {
+                "save": "Memorize Pigment",
+                "load": "Recall Pigment",
+                "delete": "Forget Pigment"
+            },
+            "create_shield/": {
+                "normal": "Hex Shield",
+                "glitchy": "Unstable Hex Shield"
+            },
+            set_fake_impetus_player: "Bind Figment",
+            "pattern/": {
+                rotate: "Revolving Distillation",
+                merge: "Painter's Distillation",
+                head: "Starting Distillation",
+                tail: "Ending Distillation",
+                line_count: "Fragment's Purification",
+                start_dir: "Winding Purification"
+            },
+            construct_get_self: "Automaton's Reflection",
+            "give_command/": {
+                pick_up: "Command: Pick Up Item",
+                drop_off: "Command: Drop Item",
+                drop_item: "Command: Drop Item",
+                move_to: "Command: Move To Position",
+                "harvest": "Command: Harvest",
+                "use/": {
+                    block: "Command: Use On Block",
+                    on_block: "Command: Use On Block"
+                }
+            },
+            bind_construct: "Artificer's Gambit",
+            "instructions/": {
+                send: "Send Instructions",
+                broadcast: "Broadcast Instructions"
+            },
+            get_main_hand: "Duelist's Purification",
+            get_off_hand: "Shieldbearer's Purification",
+            "get_inventory/": {
+                stacks: "Hoarder's Distillation",
+                items: "Collector's Distillation"
+            },
+            "get_stack_prop/": {
+                "size": "Treasurer's Purification",
+                "item": "Logistician's Purification"
+            },
+            "create_construct/": {
+                spider: "Create Spider Construct"
+            },
+            "get_entity/construct": "Entity Purification: Construct",
+            "zone_entity/construct": "Zone Distillation: Construct",
+            "zone_entity/not_construct": "Zone Distillation: Non-Construct"
+        },
+        "action.book.hexbound:": {
+            "get_entity/construct": "Entity Prfn.: Construct",
+            "zone_entity/construct": "Zone Dstl.: Construct",
+            "zone_entity/not_construct": "Zone Dstl.: Non-Construct",
+            "get_off_hand": "Shieldbearer's Prfn."
+        },
         "spell.hexbound:": {
             "colorizer/": {
                 "save": "Memorize Pigment",
@@ -58,10 +117,12 @@
             "give_command/": {
                 pick_up: "Command: Pick Up Item",
                 drop_off: "Command: Drop Item",
+                drop_item: "Command: Drop Item",
                 move_to: "Command: Move To Position",
                 "harvest": "Command: Harvest",
                 "use/": {
-                    block: "Command: Use On Block"
+                    block: "Command: Use On Block",
+                    on_block: "Command: Use On Block"
                 }
             },
             bind_construct: "Artificer's Gambit",
