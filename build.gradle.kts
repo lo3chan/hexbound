@@ -66,3 +66,28 @@ tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
         jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_21)
     }
 }
+
+tasks.register("generateLang") {
+    val langDir = file("src/main/resources/assets/hexbound/lang")
+    inputs.dir(langDir)
+    outputs.files(file("$langDir/en_us.json"), file("$langDir/zh_cn.json"))
+
+    doLast {
+        listOf("en_us", "zh_cn").forEach { name ->
+            val inputFile = file("$langDir/$name.flatten.json5")
+            val outputFile = file("$langDir/$name.json")
+            if (inputFile.exists()) {
+                with(coffee.cypher.gradleutil.filters.JsonUtil) {
+                    val result = inputFile.reader().asJson().flatten().removeIndents().toJson(blue.endless.jankson.JsonGrammar.STRICT)
+                    outputFile.writeText(result)
+                }
+                println("Generated $outputFile")
+            }
+        }
+    }
+}
+
+tasks.named("processResources") {
+    dependsOn("generateLang")
+}
+
